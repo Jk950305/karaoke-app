@@ -1,0 +1,43 @@
+.filename-label {
+	display: inline-block;
+  padding-top: 16px;
+  vertical-align: 2px;
+}
+
+.row {
+	margin-bottom: 20px;
+	width: 100%;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+button.btns {
+	width:28%;
+	margin-left:1%;
+	margin-right:1%;
+	float: left;
+}
+
+p.tagg {
+	text-align: center;
+	width: 40%;
+	float: left;
+}
+
+.title_header{
+	font-size: 3em;
+	margin-bottom: 50px;
+}
+
+.textarea{
+	text-align: center;
+	width: 90%;
+}
+
+.ranger{
+	margin-left:auto;
+	margin-right:auto;
+	width:95%;
+}
+

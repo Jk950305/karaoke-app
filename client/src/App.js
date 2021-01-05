@@ -46,38 +46,36 @@ class App extends Component {
   
 render() {
     return (
-      <div className="App">
-        <p>{this.state.response}</p>
-        <form onSubmit={this.handleSubmit}>
-          <p>
-            <strong>Post to Server:</strong>
-          </p>
-          <input
-            type="text"
-            value={this.state.post}
-            onChange={e => this.setState({ post: e.target.value })}
-          />
-          <button type="submit">Submit</button>
-        </form>
-        <p>{this.state.responseToPost}</p>
-
-
-        <div>
-          <div>
-            <BrowserRouter>
-          <div>
-            <Navigation />
-              <Switch>
-               <Route path="/" component={Home} exact/>
-               <Route path="/contact" component={Contact}/>
-               <Route path="/karaoke" component={Karaoke}/>
-             </Switch>
-          </div> 
-        </BrowserRouter>
-          </div>
+        <div className="App">
+            <div>
+                <div>
+                    <BrowserRouter>
+                        <div>
+                            <Navigation />
+                            <Switch>
+                                <Route path="/" component={Home} exact/>
+                                <Route path="/contact" component={Contact}/>
+                                <Route path="/karaoke" component={Karaoke}/>
+                            </Switch>
+                        </div> 
+                    </BrowserRouter>
+                </div>
+            </div>
+            <hr/>
+            <div className="row">
+                <p>{this.state.response}</p>
+                <form onSubmit={this.handleSubmit}>
+                    <p><strong>Post to Server:</strong></p>
+                    <input
+                        type="text"
+                        value={this.state.post}
+                        onChange={e => this.setState({ post: e.target.value })}
+                    />
+                    <button type="submit">Submit</button>
+                </form>
+                <p>{this.state.responseToPost}</p>
+            </div>     
         </div>
-                
-      </div>
     );
   }
 }

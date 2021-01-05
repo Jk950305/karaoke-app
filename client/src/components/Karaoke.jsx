@@ -1,7 +1,6 @@
 import FilenameLabel from'./FilenameLabel.jsx';
 import TrackControls from'./TrackControls.jsx';
 import ErrorAlert from'./ErrorAlert.jsx';
-import listReactFiles from 'list-react-files';
 
 const EventEmitter = require('events').EventEmitter;
 const React = require('react');
@@ -246,18 +245,6 @@ class Karaoke extends React.Component {
     	return result;
     }
 
-    getFiles(){
-       var temp = require('list-files');
-
-
-        temp(function(result) {
-            console.log(result);
-        }, {
-            dir: 'dir',
-            name: 'pdf'
-        });
-    }
-
 	render (){
 	  	return (
 
@@ -334,14 +321,6 @@ class Karaoke extends React.Component {
                 	<div>
                 		<textarea rows="20" cols="30" placeholder="write the lyrics here..."></textarea>
                     </div>
-                </div>
-                <div>
-                    <div>
-                        <button className="btns" type="button" onClick={e => this.getFiles(e)}> get fiels </button>
-                    
-
-                    </div>
-
                 </div>
 
 		    </div>

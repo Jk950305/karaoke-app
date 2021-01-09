@@ -230,13 +230,18 @@ class Karaoke extends React.Component {
     getTime(){
         var result = "";
         if(this.state.duration!=null){
-            var whole = this.state.duration;
+
+            var cur_tempo = this.state.tempo;
+
+            var whole = this.state.duration/cur_tempo;
             var whole_min = Math.floor(whole/60);
             var whole_sec = Math.floor(whole-whole_min*60);
 
-            var current = this.state.t;
+            var current = this.state.t/cur_tempo;
             var cur_min = Math.floor(current/60);
             var cur_sec = Math.floor(current-cur_min*60);
+
+
 
             result += ((cur_min<10)?("0"+cur_min):(cur_min))+":"+((cur_sec<10)?("0"+cur_sec):(cur_sec));
             result += "/";
@@ -320,6 +325,11 @@ class Karaoke extends React.Component {
                 <div className="row">
                 	<div>
                 		<textarea rows="20" cols="30" placeholder="write the lyrics here..."></textarea>
+                    </div>
+                </div>
+                <div className="row">
+                    <div>
+                        <button type="button" > get mp3 </button>
                     </div>
                 </div>
 

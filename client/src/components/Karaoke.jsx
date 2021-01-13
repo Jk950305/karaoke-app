@@ -22,6 +22,10 @@ class Karaoke extends React.Component {
             status: [],
             t: 0,
             tempo: 1.0,
+            file: undefined,
+            lyrics: "",
+
+            music_titles: [],
         };
 
         this.emitter = new EventEmitter();
@@ -42,7 +46,6 @@ class Karaoke extends React.Component {
         });
 
         this.inputRef = React.createRef();
-        this.file_location = "";
     }
 
     play() {
@@ -75,7 +78,7 @@ class Karaoke extends React.Component {
                 filename: undefined,
             });
 
-
+            this.setState({lyrics: ""});
 
 
             // http://stackoverflow.com/q/4851595/786644
@@ -83,7 +86,7 @@ class Karaoke extends React.Component {
             this.emitter.emit('state', {filename});
 
             const file = e.target.files[0];
-            this.file_location = URL.createObjectURL(file);
+            this.setState({file});
 
             const reader = new FileReader();
             reader.readAsArrayBuffer(file);
@@ -103,7 +106,6 @@ class Karaoke extends React.Component {
                     return;
                 }
 
-                this.file_location = filename;
 
                 this.audioPlayer.setBuffer(buffer);
                 this.play();
@@ -250,11 +252,110 @@ class Karaoke extends React.Component {
     	return result;
     }
 
+    componentDidMount() {
+        this.stop();
+        this.callApi()
+            .then(
+                res => {
+                    for(var i=0;i<res.music.length;i++){
+                        this.setState({ music_titles : this.state.music_titles.concat(res.music[i].filename) });
+                    }
+                }
+            )
+            .catch(err => console.log(err));
+    }
+      
+    callApi = async () => {
+        const response = await fetch('/api/files');
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
+    };
+
+    getMusic = async e => {
+        e.preventDefault();
+        var file;
+        var filename = e.target.outerText+".mp3";
+        var url = '/api/music?file='+filename;
+        await fetch( url, {
+            method: 'GET',
+            headers: {},
+        }).then(function (response) {
+                    return response.blob();
+                }
+            )
+            .then(function(blob) {
+                file = blob;
+            })
+            .catch(error => {
+                //whatever
+            });
+        this.loadFile(file, filename);
+
+        var lyrics_filename = filename.substring(0, filename.indexOf('.'))+".txt";
+
+        url = '/api/lyrics?file='+lyrics_filename;
+        const response1 = await fetch(url);
+        const body = await response1.text();
+        if (response1.status !== 200) throw Error(body.message);
+        this.setState({lyrics:body});
+    }
+
+    loadFile(file,filename) {
+        this.stop();
+
+        this.emitter.emit('status', 'Reading file...');
+        this.emitter.emit('state', {
+            error: undefined,
+            filename: undefined,
+        });
+
+        // http://stackoverflow.com/q/4851595/786644
+        this.emitter.emit('state', {filename});
+
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onload = async event => {
+            this.emitter.emit('status', 'Playing file...');
+
+            let buffer;
+            try {
+                buffer = await this.audioPlayer.decodeAudioData(event.target.result);
+            } catch (err) {
+                this.emitter.emit('state', {
+                    error: {
+                        message: err.message,
+                        type: 'Decoding error',
+                    },
+                });
+                return;
+            }
+
+            this.audioPlayer.setBuffer(buffer);
+            this.play();
+        };
+    }
+
+    loadLyrics(){
+        var result = [];
+        var lyrics = this.state.lyrics.split('\n');
+        for(var i=0;i<lyrics.length;i++){
+            result.push(lyrics[i]);
+            result.push(<br/>);
+        }
+        return result;
+    }
+
 	render (){
+        const items = [];
+        for(const [index, value] of this.state.music_titles.entries()){
+            items.push(<tr><td><a href="#header" key={index} onClick={e => this.getMusic(e)}>{value.substring(0,value.indexOf('.'))}</a></td></tr>);
+        }
+
 	  	return (
 
-	  		<div className="Application">
-	  		  <div className="row title_header alert alert-info">
+	  		<div className="Karaoke">
+	  		  <div id="header" className="row title_header alert alert-info">
 	  		  	Karaoke
 	  		  </div>
 
@@ -273,8 +374,10 @@ class Karaoke extends React.Component {
                         />
                         Select MP3
                     </label>
+                    <br/>
                     <FilenameLabel error={this.state.error} filename={this.state.filename} />
                 </div>
+                <hr/>
 
                 <ErrorAlert error={this.state.error} />
 
@@ -323,14 +426,18 @@ class Karaoke extends React.Component {
                 </div>
 
                 <div className="row">
-                	<div>
-                		<textarea rows="20" cols="30" placeholder="write the lyrics here..."></textarea>
+                	<div className="lyrics_box">
+                        <p>{this.loadLyrics()}</p>
                     </div>
                 </div>
                 <div className="row">
-                    <div>
-                        <button type="button" > get mp3 </button>
-                    </div>
+                    <div className="row">
+                        <table className="music_table">
+                            <tbody>
+                                {items}
+                            </tbody>
+                        </table>
+                    </div> 
                 </div>
 
 		    </div>

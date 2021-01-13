@@ -13,7 +13,7 @@ const FilenameLabel = props => {
         classes.push('alert-danger');
     }
 
-    return <span className={classNames(classes)}>{props.filename}</span>;
+    return <span className={classNames(classes)}>{props.filename.substring(0,props.filename.indexOf('.'))}</span>;
 };
 
 

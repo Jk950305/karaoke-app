@@ -144,7 +144,7 @@ extend(RateTransposer.prototype, {
     },
 
     _transpose: function (numFrames) {
-        if (numFrames == 0) {
+        if (numFrames === 0) {
             // no work
             return 0;
         }
@@ -167,7 +167,7 @@ extend(RateTransposer.prototype, {
 
         this.slopeCount -= 1.0;
 
-        if (numFrames != 1) {
+        if (numFrames !== 1) {
             out: while (true) {
                 while (this.slopeCount > 1.0) {
                     this.slopeCount -= 1.0;
@@ -902,7 +902,6 @@ extend(Stretch.prototype, {
         var ovlSkip;
         var offset;
         var temp;
-        var i;
 
         if (this.pMidBuffer == null) {
             // if midBuffer is empty, move the first samples of the input stream
@@ -915,7 +914,6 @@ extend(Stretch.prototype, {
             this._inputBuffer.receiveSamples(this.pMidBuffer, this.overlapLength);
         }
 
-        var output;
         // Process samples as long as there are enough samples in 'inputBuffer'
         // to form a processing frame.
         while (this._inputBuffer.frameCount >= this.sampleReq) {
@@ -1077,7 +1075,7 @@ extend(SoundTouch.prototype, {
         }
 
         if (this._rate > 1.0) {
-            if (this._outputBuffer != this.rateTransposer.outputBuffer) {
+            if (this._outputBuffer !== this.rateTransposer.outputBuffer) {
                 this.tdStretch.inputBuffer = this._inputBuffer;
                 this.tdStretch.outputBuffer = this._intermediateBuffer;
 
@@ -1086,7 +1084,7 @@ extend(SoundTouch.prototype, {
             }
         }
         else {
-            if (this._outputBuffer != this.tdStretch.outputBuffer) {
+            if (this._outputBuffer !== this.tdStretch.outputBuffer) {
                 this.rateTransposer.inputBuffer = this._inputBuffer;
                 this.rateTransposer.outputBuffer = this._intermediateBuffer;
 

@@ -24,7 +24,7 @@ class Karaoke extends React.Component {
             tempo: 1.0,
             file: undefined,
             lyrics: "",
-
+            showPL : false,
             music_titles: [],
         };
 
@@ -114,53 +114,24 @@ class Karaoke extends React.Component {
     }
 
     //https://prgomez.com/why-do-re-mi/
-
     getPitchValue(val) {
     	var num = 0;
     	var s_var = (val>=0)?(parseInt(val)):(12+parseInt(val));
     	switch(s_var){
-    		case 0 : 
-    			num = 1;
-    			break;
-    		case 1 : 
-    			num = 1.059;
-    			break;
-    		case 2 : 
-    			num = 1.122;
-    			break;
-    		case 3 : 
-    			num = 1.189;
-    			break;
-    		case 4 : 
-    			num = 1.26;
-    			break;
-    		case 5 : 
-    			num = 1.335;
-    			break;
-    		case 6 : 
-    			num = 1.414;
-    			break;
-    		case 7 : 
-    			num = 1.498;
-    			break;
-    		case 8 : 
-    			num = 1.587;
-    			break;
-    		case 9 : 
-    			num = 1.682;
-    			break;
-    		case 10 : 
-    			num = 1.782;
-    			break;
-    		case 11 : 
-    			num = 1.888;
-    			break;
-    		case 12 : 
-    			num = 2;
-    			break;
-    		default : 
-    			num = 1;
-    			break;
+    		case 0 : num = 1; break;
+    		case 1 : num = 1.059; break;
+    		case 2 : num = 1.122; break;
+    		case 3 : num = 1.189; break;
+    		case 4 : num = 1.26; break;
+    		case 5 : num = 1.335; break;
+    		case 6 : num = 1.414; break;
+    		case 7 : num = 1.498; break;
+    		case 8 : num = 1.587; break;
+    		case 9 : num = 1.682; break;
+    		case 10 : num = 1.782; break;
+    		case 11 : num = 1.888; break;
+    		case 12 : num = 2; break;
+    		default : num = 1; break;
     	}
         const pitch = (val>=0)?(num):(num/2);
         return pitch;
@@ -243,8 +214,6 @@ class Karaoke extends React.Component {
             var cur_min = Math.floor(current/60);
             var cur_sec = Math.floor(current-cur_min*60);
 
-
-
             result += ((cur_min<10)?("0"+cur_min):(cur_min))+":"+((cur_sec<10)?("0"+cur_sec):(cur_sec));
             result += "/";
             result += ((whole_min<10)?("0"+whole_min):(whole_min))+":"+((whole_sec<10)?("0"+whole_sec):(whole_sec));
@@ -264,6 +233,10 @@ class Karaoke extends React.Component {
             )
             .catch(err => console.log(err));
     }
+
+    componentWillUnmount() {
+        this.stop();
+    }
       
     callApi = async () => {
         const response = await fetch('/api/files');
@@ -273,6 +246,7 @@ class Karaoke extends React.Component {
     };
 
     getMusic = async e => {
+        this.setState({showPL:false});
         e.preventDefault();
         var file;
         var filename = e.target.outerText+".mp3";
@@ -346,10 +320,18 @@ class Karaoke extends React.Component {
         return result;
     }
 
+    showPlaylist(){
+        this.setState({showPL : true});
+    }
+
+    hidePlaylist(){
+        this.setState({showPL : false});
+    }
+
 	render (){
-        const items = [];
-        for(const [index, value] of this.state.music_titles.entries()){
-            items.push(<tr><td><a href="#header" key={index} onClick={e => this.getMusic(e)}>{value.substring(0,value.indexOf('.'))}</a></td></tr>);
+        var items = [];
+        for(const [key, value] of this.state.music_titles.entries()){
+            items.push(<tr><td><a href="#header" key={key} onClick={e => this.getMusic(e)}>{value.substring(0,value.indexOf('.'))}</a></td></tr>);
         }
 
 	  	return (
@@ -359,29 +341,47 @@ class Karaoke extends React.Component {
 	  		  	Karaoke
 	  		  </div>
 
-		      <div className="row" style={{marginBottom: '1em'}}>
+		      <div className="row" style={{marginBottom: '1em', marginLeft:'auto', marginRight:'auto'}}>
                     <label
                         className="btn btn-primary btn-lg"
-                        htmlFor="sas-file"
-                        style={{marginRight: '0.25em'}}
+                        htmlFor="upload-file"
+                        style={{marginRight: '0.25em', marginBottom: '1em'}}
                     >
                         <input
-                            id="sas-file"
+                            id="upload-file"
                             accept="audio"
                             type="file"
                             style={{display: 'none'}}
                             onChange={e => this.handleFileChange(e)}
+                            onClick={this.hidePlaylist.bind(this)}
                         />
-                        Select MP3
+                        Upload Music
                     </label>
-                    <br/>
-                    <FilenameLabel error={this.state.error} filename={this.state.filename} />
-                </div>
-                <hr/>
+                    <button
+                        className="btn btn-primary btn-lg"
+                        style={{marginLeft: '0.25em',marginBottom: '1em'}}
+                        id="choose-file"
+                        onClick={(this.state.showPL)?(this.hidePlaylist.bind(this)):(this.showPlaylist.bind(this))}
+                    >
+                        {(!this.state.showPL)?('Show Playlist'):('Hide Playlist')}
+                    </button>
 
+                </div>
                 <ErrorAlert error={this.state.error} />
+                <hr/>
+                <div className="row" style={{display : (this.state.showPL)?( 'block' ):( 'none' )}}>
+                    <div className="row">
+                        <table className="music_table">
+                            <tbody>
+                                {items}
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr/> 
+                </div>
 
                 <div className="row">
+                    <FilenameLabel error={this.state.error} filename={this.state.filename} />
                     <div className="" style={{paddingTop: '6px'}}>
                     	<TrackControls
                             action={this.state.action}
@@ -393,7 +393,7 @@ class Karaoke extends React.Component {
                         />
                     </div>
                     <div>
-                    	<p>{this.getTime()}</p>
+                    	<p style={{marginBottom:'0'}}>{this.getTime()}</p>
                     </div>
                     <div className="ranger">
                         <input
@@ -411,35 +411,25 @@ class Karaoke extends React.Component {
 
                 <div className="row">
                    	<div className="">
-                   		<button className="btns" type="button" onClick={e => this.decreasePitch(e)}> down </button>
+                   		<button className="btns" type="button" onClick={e => this.decreasePitch(e)}> - </button>
 	                        <p className="tagg"> Pitch ({ (this.state.key<0)?(this.state.key):("+"+this.state.key) } key) </p>
-                    	<button className="btns" type="button" onClick={e => this.increasePitch(e)}> up </button>
+                    	<button className="btns" type="button" onClick={e => this.increasePitch(e)}> + </button>
                     </div>
                 </div>
 
                 <div className="row">
                     <div className="">
-                    	<button className="btns" type="button" onClick={e => this.decreaseTempo(e)}> slow </button>
+                    	<button className="btns" type="button" onClick={e => this.decreaseTempo(e)}> - </button>
 	                        <p className="tagg"> Tempo ({ parseFloat(this.state.tempo).toFixed(1) }x) </p>
-                    	<button className="btns" type="button" onClick={e => this.increaseTempo(e)}> fast </button>
+                    	<button className="btns" type="button" onClick={e => this.increaseTempo(e)}> + </button>
                     </div>
                 </div>
 
                 <div className="row">
-                	<div className="lyrics_box">
+                	<div className="lyrics_box" style={{display : this.state.lyrics!==""? 'block' : 'none'}}>
                         <p>{this.loadLyrics()}</p>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="row">
-                        <table className="music_table">
-                            <tbody>
-                                {items}
-                            </tbody>
-                        </table>
-                    </div> 
-                </div>
-
 		    </div>
 
 	    )

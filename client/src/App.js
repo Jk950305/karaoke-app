@@ -29,7 +29,6 @@ render() {
                 </div>
             </div>
             <hr/>
-             
         </div>
     );
   }

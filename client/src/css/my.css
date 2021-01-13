@@ -1,7 +1,7 @@
 .filename-label {
 	display: inline-block;
-  padding-top: 16px;
   vertical-align: 2px;
+  	margin-bottom: 0;
 }
 
 .row {

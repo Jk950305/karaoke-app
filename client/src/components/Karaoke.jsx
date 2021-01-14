@@ -11,6 +11,8 @@ class Karaoke extends React.Component {
 	constructor(props) {
         super(props);
 
+        this.ref = React.createRef();
+
         this.state = {
             action: 'stop',
             duration: undefined,
@@ -22,7 +24,7 @@ class Karaoke extends React.Component {
             status: [],
             t: 0,
             tempo: 1.0,
-            file: undefined,
+            file: "",
             lyrics: "",
             showPL : false,
             music_titles: [],
@@ -51,6 +53,7 @@ class Karaoke extends React.Component {
     play() {
         if (this.state.action !== 'play') {
             this.audioPlayer.play();
+            this.ref.current.play();
             this.setState({action: 'play'});
         }
     }
@@ -58,6 +61,7 @@ class Karaoke extends React.Component {
     pause() {
         if (this.state.action === 'play') {
             this.audioPlayer.pause();
+            this.ref.current.pause();
             this.setState({action: 'pause'});
         }
     }
@@ -65,6 +69,9 @@ class Karaoke extends React.Component {
     stop() {
         this.pause();
         this.audioPlayer.seekPercent(0);
+
+        this.ref.current.pause();
+        this.ref.current.currentTime=0;
         this.setState({action: 'stop', t: 0});
     }
 
@@ -86,8 +93,10 @@ class Karaoke extends React.Component {
             this.emitter.emit('state', {filename});
 
             const file = e.target.files[0];
-            this.setState({file});
 
+            var fileURL = URL.createObjectURL(file);
+            this.setState({file : fileURL});
+            
             const reader = new FileReader();
             reader.readAsArrayBuffer(file);
             reader.onload = async event => {
@@ -106,10 +115,11 @@ class Karaoke extends React.Component {
                     return;
                 }
 
-
                 this.audioPlayer.setBuffer(buffer);
                 this.play();
             };
+            
+            
         }
     }
 
@@ -175,6 +185,7 @@ class Karaoke extends React.Component {
     		const tempo = +(Math.round(this.state.tempo-0.1 + "e+2")  + "e-2");
 	        this.audioPlayer.tempo = tempo;
 	        this.setState({tempo});
+            this.ref.current.playbackRate = tempo;
     	}
     }
 
@@ -183,6 +194,7 @@ class Karaoke extends React.Component {
     		const tempo = +(Math.round(this.state.tempo+0.1 + "e+2")  + "e-2");
 	        this.audioPlayer.tempo = tempo;
 	        this.setState({tempo});
+            this.ref.current.playbackRate = tempo;
     	}
     }
 
@@ -190,6 +202,9 @@ class Karaoke extends React.Component {
         const percent = parseFloat(e.target.value);
         this.audioPlayer.seekPercent(percent);
         this.play();
+
+        var current = this.state.t;
+        this.ref.current.currentTime = current;
     }
 
     percentDone() {
@@ -277,6 +292,8 @@ class Karaoke extends React.Component {
 
     loadFile(file,filename) {
         this.stop();
+        var fileURL = URL.createObjectURL(file);
+        this.setState({file : fileURL});
 
         this.emitter.emit('status', 'Reading file...');
         this.emitter.emit('state', {
@@ -382,6 +399,11 @@ class Karaoke extends React.Component {
 
                 <div className="row">
                     <FilenameLabel error={this.state.error} filename={this.state.filename} />
+                    <div>
+                        <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid">
+                        </video>
+                    </div>
+                
                     <div className="" style={{paddingTop: '6px'}}>
                     	<TrackControls
                             action={this.state.action}

@@ -1,7 +1,7 @@
 const {SimpleFilter, SoundTouch} = require('../vendor/soundtouch');
 
 const BUFFER_SIZE = 4096;
-
+//https://developer.mozilla.org/en-US/docs/Web/Guide/Audio_and_video_manipulation
 class AudioPlayer {
     constructor({emitter, pitch, tempo}) {
         this.emitter = emitter;
@@ -48,7 +48,7 @@ class AudioPlayer {
         return this.context.decodeAudioData(data);
     }
 
-    setBuffer(buffer) {
+    setBuffer(buffer,ref) {
         const bufferSource = this.context.createBufferSource();
         bufferSource.buffer = buffer;
 

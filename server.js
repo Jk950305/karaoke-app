@@ -7,6 +7,28 @@ const port = process.env.PORT || 5000;
 const fs = require('fs');
 const path = require('path');
 
+//soap request (Alsong Lyrics)
+/*
+const util = require('util')
+const soapRequest = require('easy-soap-request');
+const url = 'http://lyrics.alsong.co.kr/alsongwebservice/service1.asmx';
+const sampleHeaders = {
+  'Content-Type': 'application/soap+xml;charset=utf-8',
+};
+const xml = fs.readFileSync('lyricsEnvelope.xml', 'utf-8');
+(async () => {
+  const { response } = await soapRequest({ url: url, headers: sampleHeaders, xml: xml, timeout: 1000 }); // Optional timeout parameter(milliseconds)
+  const { headers, body, statusCode } = response;
+  console.log("\nheader = "+headers);
+  console.log("\nbody = "+body);
+  console.log("\nheader = "+statusCode);
+  console.log("\nto text = "+response);
+  console.log(util.inspect(response, false, null, true));
+})();
+*/
+
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

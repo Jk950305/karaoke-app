@@ -48,20 +48,21 @@ class Karaoke extends React.Component {
         });
 
         this.inputRef = React.createRef();
+        this.changeAudio = this.changeAudio.bind(this);
+        this.prev = 0;
     }
 
     play() {
         if (this.state.action !== 'play') {
             this.audioPlayer.play();
-            this.ref.current.play();
             this.setState({action: 'play'});
+            this.ref.current.playbackRate = this.state.tempo;
         }
     }
 
     pause() {
         if (this.state.action === 'play') {
             this.audioPlayer.pause();
-            this.ref.current.pause();
             this.setState({action: 'pause'});
         }
     }
@@ -69,9 +70,6 @@ class Karaoke extends React.Component {
     stop() {
         this.pause();
         this.audioPlayer.seekPercent(0);
-
-        this.ref.current.pause();
-        this.ref.current.currentTime=0;
         this.setState({action: 'stop', t: 0});
     }
 
@@ -116,7 +114,7 @@ class Karaoke extends React.Component {
                 }
 
                 this.audioPlayer.setBuffer(buffer);
-                this.play();
+                
             };
             
             
@@ -199,12 +197,14 @@ class Karaoke extends React.Component {
     }
 
     handleSeek(e) {
+    /*
         const percent = parseFloat(e.target.value);
         this.audioPlayer.seekPercent(percent);
         this.play();
 
-        var current = this.state.t;
+        var current = this.state.duration*percent/100;
         this.ref.current.currentTime = current;
+        */
     }
 
     percentDone() {
@@ -292,6 +292,7 @@ class Karaoke extends React.Component {
 
     loadFile(file,filename) {
         this.stop();
+
         var fileURL = URL.createObjectURL(file);
         this.setState({file : fileURL});
 
@@ -321,9 +322,7 @@ class Karaoke extends React.Component {
                 });
                 return;
             }
-
             this.audioPlayer.setBuffer(buffer);
-            this.play();
         };
     }
 
@@ -345,6 +344,17 @@ class Karaoke extends React.Component {
         this.setState({showPL : false});
     }
 
+    changeAudio(e) {
+        e.preventDefault();
+        var current = this.ref.current.currentTime;
+        if(current<this.prev-0.5*this.state.tempo || this.prev+0.5*this.state.tempo<current){
+            const percent = this.ref.current.currentTime/this.state.duration*100;
+            this.audioPlayer.seekPercent(percent);
+            this.play();
+        }
+        this.prev = current;
+    }
+
 	render (){
         var items = [];
         for(const [key, value] of this.state.music_titles.entries()){
@@ -360,7 +370,7 @@ class Karaoke extends React.Component {
 
 		      <div className="row" style={{marginBottom: '1em', marginLeft:'auto', marginRight:'auto'}}>
                     <label
-                        className="btn btn-primary btn-lg"
+                        className="btn btn-primary btn-md"
                         htmlFor="upload-file"
                         style={{marginRight: '0.25em', marginBottom: '1em'}}
                     >
@@ -372,16 +382,24 @@ class Karaoke extends React.Component {
                             onChange={e => this.handleFileChange(e)}
                             onClick={this.hidePlaylist.bind(this)}
                         />
-                        Upload Music
+                        Upload
                     </label>
                     <button
-                        className="btn btn-primary btn-lg"
+                        className="btn btn-primary btn-md"
                         style={{marginLeft: '0.25em',marginBottom: '1em'}}
                         id="choose-file"
                         onClick={(this.state.showPL)?(this.hidePlaylist.bind(this)):(this.showPlaylist.bind(this))}
                     >
                         {(!this.state.showPL)?('Show Playlist'):('Hide Playlist')}
                     </button>
+                    <button
+                        className="btn btn-danger btn-md"
+                        style={{marginLeft: '0.25em',marginBottom: '1em'}}
+                        id="select-youtube"
+                    >
+                        Search on YT
+                    </button>
+
 
                 </div>
                 <ErrorAlert error={this.state.error} />
@@ -400,39 +418,13 @@ class Karaoke extends React.Component {
                 <div className="row">
                     <FilenameLabel error={this.state.error} filename={this.state.filename} />
                     <div>
-                        <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid">
+                        <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.changeAudio(e)} onPlay={this.play.bind(this)} onPause={this.pause.bind(this)} onLoad={e => this.loadVideo(e)} controlsList="nodownload" disablePictureInPicture>
                         </video>
-                    </div>
-                
-                    <div className="" style={{paddingTop: '6px'}}>
-                    	<TrackControls
-                            action={this.state.action}
-                            error={this.state.error}
-                            filename={this.state.filename}
-                            onPlay={() => this.play()}
-                            onPause={() => this.pause()}
-                            onStop={() => this.stop()}
-                        />
-                    </div>
-                    <div>
-                    	<p style={{marginBottom:'0'}}>{this.getTime()}</p>
-                    </div>
-                    <div className="ranger">
-                        <input
-                            className="form-control"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="0.05"
-                            value={this.percentDone()}
-                            onChange={e => this.handleSeek(e)}
-                        />
-                        <output className="bubble"></output>
                     </div>
                 </div>
 
                 <div className="row">
-                   	<div className="">
+                   	<div className="controls">
                    		<button className="btns" type="button" onClick={e => this.decreasePitch(e)}> - </button>
 	                        <p className="tagg"> Pitch ({ (this.state.key<0)?(this.state.key):("+"+this.state.key) } key) </p>
                     	<button className="btns" type="button" onClick={e => this.increasePitch(e)}> + </button>
@@ -440,7 +432,7 @@ class Karaoke extends React.Component {
                 </div>
 
                 <div className="row">
-                    <div className="">
+                    <div className="controls">
                     	<button className="btns" type="button" onClick={e => this.decreaseTempo(e)}> - </button>
 	                        <p className="tagg"> Tempo ({ parseFloat(this.state.tempo).toFixed(1) }x) </p>
                     	<button className="btns" type="button" onClick={e => this.increaseTempo(e)}> + </button>

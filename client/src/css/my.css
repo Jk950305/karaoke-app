@@ -6,7 +6,7 @@
 
 .row {
 	margin-bottom: 20px;
-	width: 100%;
+	width: 90%;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
@@ -62,4 +62,12 @@ p.tagg {
 
 .vid {
 	width: 100%;
+}
+
+video::-webkit-media-controls-volume-slider {
+display:none;
+}
+
+video::-webkit-media-controls-mute-button {
+display:none;
 }

@@ -1,11 +1,10 @@
 const {SimpleFilter, SoundTouch} = require('../vendor/soundtouch');
-
 const BUFFER_SIZE = 4096;
+
 //https://developer.mozilla.org/en-US/docs/Web/Guide/Audio_and_video_manipulation
 class AudioPlayer {
     constructor({emitter, pitch, tempo}) {
         this.emitter = emitter;
-
         this.context = new AudioContext();
         this.scriptProcessor = this.context.createScriptProcessor(BUFFER_SIZE, 2, 2);
         this.scriptProcessor.onaudioprocess = e => {
@@ -30,6 +29,7 @@ class AudioPlayer {
         this.duration = undefined;
     }
 
+    //get and set pitch value
     get pitch() {
         return this.soundTouch.pitch;
     }
@@ -37,6 +37,7 @@ class AudioPlayer {
         this.soundTouch.pitch = pitch;
     }
 
+    //get and set tempo value
     get tempo() {
         return this.soundTouch.tempo;
     }
@@ -44,10 +45,12 @@ class AudioPlayer {
         this.soundTouch.tempo = tempo;
     }
 
+    //decode audio data and set buffer
     decodeAudioData(data) {
         return this.context.decodeAudioData(data);
     }
 
+    //create a buffer source from given data and send info to observer
     setBuffer(buffer,ref) {
         const bufferSource = this.context.createBufferSource();
         bufferSource.buffer = buffer;
@@ -71,16 +74,17 @@ class AudioPlayer {
         this.emitter.emit('state', {duration: buffer.duration});
     }
 
+    //play and pause audio
     play() {
         this.context.resume();
         this.scriptProcessor.connect(this.context.destination);
     }
-
     pause() {
         this.context.resume();
         this.scriptProcessor.disconnect(this.context.destination);
     }
 
+    //set current source position to requested percentage of the full-length 
     seekPercent(percent) {
         if (this.simpleFilter !== undefined) {
             this.simpleFilter.sourcePosition = Math.round(

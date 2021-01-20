@@ -22,7 +22,7 @@ render() {
                             <Switch>
                                 <Route path="/" component={Home} exact/>
                                 <Route path="/contact" component={Contact}/>
-                                <Route path="/karaoke" component={Karaoke}/>
+                                <Route path="/temp" component={Karaoke}/>
                             </Switch>
                         </div> 
                     </BrowserRouter>

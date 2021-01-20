@@ -2,7 +2,7 @@ const classNames = require('classnames');
 const React = require('react');
 
 const FilenameLabel = props => {
-    if (props.filename === undefined) {
+    if (props.filename === undefined || props.filename === "") {
         return null;
     }
 
@@ -13,9 +13,10 @@ const FilenameLabel = props => {
         classes.push('alert-danger');
     }
 
-    return <span className={classNames(classes)}>{props.filename.substring(0,props.filename.indexOf('.'))}</span>;
+    var title = props.filename;
+    title = (title.charAt(title.length-4) === ".")?(title.substring(0, title.indexOf('.'))):(title);
+    return <span className={classNames(classes)}>{title}</span>;
 };
-
 
 
 export default FilenameLabel;

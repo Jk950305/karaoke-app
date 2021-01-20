@@ -25,9 +25,11 @@ class Karaoke extends React.Component {
             t: 0,
             tempo: 1.0,
             file: "",
-            lyrics: "",
             showPL : false,
             music_titles: [],
+            yt_title: "",
+            yt_url: "",
+            yt_list: [],
         };
 
         this.emitter = new EventEmitter();
@@ -49,6 +51,9 @@ class Karaoke extends React.Component {
 
         this.inputRef = React.createRef();
         this.changeAudio = this.changeAudio.bind(this);
+        this.handleURL = this.handleURL.bind(this);
+        this.handleTitle = this.handleTitle.bind(this);
+        this.loadFile = this.loadFile.bind(this);
         this.prev = 0;
     }
 
@@ -83,13 +88,10 @@ class Karaoke extends React.Component {
                 filename: undefined,
             });
 
-            this.setState({lyrics: ""});
-
 
             // http://stackoverflow.com/q/4851595/786644
             const filename = e.target.value.replace('C:\\fakepath\\', '');
             this.emitter.emit('state', {filename});
-
             const file = e.target.files[0];
 
             var fileURL = URL.createObjectURL(file);
@@ -238,7 +240,16 @@ class Karaoke extends React.Component {
 
     componentDidMount() {
         this.stop();
-        this.callApi()
+        this.getMusicList();
+    }
+
+    componentWillUnmount() {
+        this.stop();
+    }
+
+    getMusicList(){
+        this.setState({music_titles:[]});
+        this.getFiles()
             .then(
                 res => {
                     for(var i=0;i<res.music.length;i++){
@@ -247,25 +258,31 @@ class Karaoke extends React.Component {
                 }
             )
             .catch(err => console.log(err));
-    }
 
-    componentWillUnmount() {
-        this.stop();
     }
       
-    callApi = async () => {
+    getFiles = async () => {
         const response = await fetch('/api/files');
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
         return body;
     };
 
-    getMusic = async e => {
+    async searchOnYoutube(e) {
+        e.preventDefault();
+        var title = e.target[0].value;
+        const response = await fetch('/api/youtubeSearch?title='+title);
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        this.setState({yt_list: body});
+    };
+
+    async getSavedMusic(e) {
         this.setState({showPL:false});
         e.preventDefault();
         var file;
-        var filename = e.target.outerText+".mp3";
-        var url = '/api/music?file='+filename;
+        var filename = e.target.outerText+".mp4";
+        var url = '/api/savedMusic?file='+filename;
         await fetch( url, {
             method: 'GET',
             headers: {},
@@ -280,21 +297,52 @@ class Karaoke extends React.Component {
                 //whatever
             });
         this.loadFile(file, filename);
-
-        var lyrics_filename = filename.substring(0, filename.indexOf('.'))+".txt";
-
-        url = '/api/lyrics?file='+lyrics_filename;
-        const response1 = await fetch(url);
-        const body = await response1.text();
-        if (response1.status !== 200) throw Error(body.message);
-        this.setState({lyrics:body});
     }
+
+    async getMusic(yt_url,yt_title) {
+        this.setState({showPL:false});
+
+        var audio_file;
+
+        var url = '/api/music?url='+yt_url+'&title='+yt_title;
+        await fetch( url, {
+            method: 'GET',
+            headers: {},
+        }).then(function (response) {
+                    return response.blob();
+                }
+            )
+            .then(function(blob) {
+                audio_file = blob;
+                return audio_file;
+            })
+            .catch(error => {
+                //whatever
+            });
+        this.loadFile(audio_file,yt_title);
+    }
+
+    /*
+    async getMedia(e){
+        e.preventDefault();
+        var yt_title = e.target[0].value;
+        var yt_url = e.target[1].value;
+
+        await this.getMusic(yt_url,yt_title);
+        this.setState({ yt_title : "", yt_url : ""  });
+    }
+    */
+
+    async getMedia(e,yt_title,yt_url){
+        e.preventDefault();
+        this.setState({yt_list:[],yt_title:""});
+        await this.getMusic(yt_url,yt_title);
+
+    }
+
 
     loadFile(file,filename) {
         this.stop();
-
-        var fileURL = URL.createObjectURL(file);
-        this.setState({file : fileURL});
 
         this.emitter.emit('status', 'Reading file...');
         this.emitter.emit('state', {
@@ -304,6 +352,9 @@ class Karaoke extends React.Component {
 
         // http://stackoverflow.com/q/4851595/786644
         this.emitter.emit('state', {filename});
+
+        var fileURL = URL.createObjectURL(file);
+        this.setState({file : fileURL});
 
         const reader = new FileReader();
         reader.readAsArrayBuffer(file);
@@ -324,23 +375,18 @@ class Karaoke extends React.Component {
             }
             this.audioPlayer.setBuffer(buffer);
         };
+        this.getMusicList();
     }
 
-    loadLyrics(){
-        var result = [];
-        var lyrics = this.state.lyrics.split('\n');
-        for(var i=0;i<lyrics.length;i++){
-            result.push(lyrics[i]);
-            result.push(<br/>);
+    showPlaylist(e){
+        e.preventDefault();
+        if(this.state.music_titles.length>0){
+            this.setState({showPL : true});
         }
-        return result;
     }
 
-    showPlaylist(){
-        this.setState({showPL : true});
-    }
-
-    hidePlaylist(){
+    hidePlaylist(e){
+        e.preventDefault();
         this.setState({showPL : false});
     }
 
@@ -355,20 +401,48 @@ class Karaoke extends React.Component {
         this.prev = current;
     }
 
+    handleURL(e){
+        this.setState({yt_url : e.target.value});
+    }
+    handleTitle(e){
+        this.setState({yt_title : e.target.value});
+    }
+
 	render (){
         var items = [];
         for(const [key, value] of this.state.music_titles.entries()){
-            items.push(<tr><td><a href="#header" key={key} onClick={e => this.getMusic(e)}>{value.substring(0,value.indexOf('.'))}</a></td></tr>);
+            items.push(<tr><td><a href="#header" key={key} onClick={e => this.getSavedMusic(e)}>{value.substring(0,value.indexOf('.'))}</a></td></tr>);
         }
+
+
+        var yt_list = [];
+        for(const [key, value] of this.state.yt_list.entries()){
+            yt_list.push(
+                <tr>
+                    <td>
+                        <div className="yt_element" onClick={e => this.getMedia(e,value.title,value.url)}>
+                            <div className="yt_thumb">
+                                <img src={value.thumbnail} alt="" className="yt_image"/>
+                                <p className="yt_time">({value.time})</p>
+                            </div>
+                            <div className="yt_info">
+                                <p className="yt_title">{value.title}</p>
+                                <p className="yt_author">{value.author}</p> 
+                            </div>
+                        </div>
+                    </td>
+                </tr>);
+        }
+
 
 	  	return (
 
 	  		<div className="Karaoke">
-	  		  <div id="header" className="row title_header alert alert-info">
-	  		  	Karaoke
-	  		  </div>
+                <div id="header" className="row title_header alert alert-info">
+	  		  	    Karaoke
+                </div>
 
-		      <div className="row" style={{marginBottom: '1em', marginLeft:'auto', marginRight:'auto'}}>
+                <div className="row" style={{marginBottom: '1em', marginLeft:'auto', marginRight:'auto'}}>
                     <label
                         className="btn btn-primary btn-md"
                         htmlFor="upload-file"
@@ -382,66 +456,99 @@ class Karaoke extends React.Component {
                             onChange={e => this.handleFileChange(e)}
                             onClick={this.hidePlaylist.bind(this)}
                         />
-                        Upload
+                        Upload from Your Device
                     </label>
                     <button
                         className="btn btn-primary btn-md"
-                        style={{marginLeft: '0.25em',marginBottom: '1em'}}
+                        style={{marginLeft: '0.25em',marginBottom: '1em', display: (this.state.music_titles.length>0)?(''):('none')}}
                         id="choose-file"
-                        onClick={(this.state.showPL)?(this.hidePlaylist.bind(this)):(this.showPlaylist.bind(this))}
+                        onClick={(this.state.showPL)?(e => this.hidePlaylist(e)):(e => this.showPlaylist(e))}
                     >
-                        {(!this.state.showPL)?('Show Playlist'):('Hide Playlist')}
-                    </button>
-                    <button
-                        className="btn btn-danger btn-md"
-                        style={{marginLeft: '0.25em',marginBottom: '1em'}}
-                        id="select-youtube"
-                    >
-                        Search on YT
+                        {(!this.state.showPL)?('Show Saved Music'):('Hide Saved Music')}
                     </button>
 
 
                 </div>
+                
+                {/*
+                <div className="row">
+                    <form onSubmit={e => this.getMedia(e)} >
+                        <input id="yt_title" value={this.state.yt_title} onChange={e => this.handleTitle(e)} type="text" placeholder="title" className="form-control"/>
+                        <input id="yt_url" value={this.state.yt_url} onChange={e => this.handleURL(e)} type="text" placeholder="url" className="form-control"/>
+                        <input type="submit"/>
+                    </form>
+
+                </div>
+                */}
+                
+
+                <div className="row">
+                    <form onSubmit={e => this.searchOnYoutube(e)} >
+                        <input id="yt_title" value={this.state.yt_title} onChange={e => this.handleTitle(e)} type="text" placeholder="Search on Youtube" className="form-control"/>
+                        <input type="submit" className="btn btn-danger btn-md" value="Search"/>
+                    </form>
+                </div>
+
                 <ErrorAlert error={this.state.error} />
-                <hr/>
-                <div className="row" style={{display : (this.state.showPL)?( 'block' ):( 'none' )}}>
+
+                
+                 
+                <div className="row" style={{display : (this.state.showPL)?( 'initial' ):( 'none' )}}>
+                    <hr/>
                     <div className="row">
                         <table className="music_table">
                             <tbody>
                                 {items}
                             </tbody>
                         </table>
+                        <a href="#" onClick={this.hidePlaylist.bind(this)}><p style={{float: 'right',fontSize:'10px'}}>close</p></a>
                     </div>
+                    
+                </div>
+            
+
+                <div className="yt_table" style={{display: (this.state.yt_list.length>0)?('initial'):('none')}}>
                     <hr/> 
-                </div>
-
-                <div className="row">
-                    <FilenameLabel error={this.state.error} filename={this.state.filename} />
-                    <div>
-                        <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.changeAudio(e)} onPlay={this.play.bind(this)} onPause={this.pause.bind(this)} onLoad={e => this.loadVideo(e)} controlsList="nodownload" disablePictureInPicture>
-                        </video>
+                    <div className="row">
+                        <div className="row">
+                            <table>
+                                <tbody>
+                                        {yt_list}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <div className="row">
-                   	<div className="controls">
-                   		<button className="btns" type="button" onClick={e => this.decreasePitch(e)}> - </button>
-	                        <p className="tagg"> Pitch ({ (this.state.key<0)?(this.state.key):("+"+this.state.key) } key) </p>
-                    	<button className="btns" type="button" onClick={e => this.increasePitch(e)}> + </button>
-                    </div>
-                </div>
 
-                <div className="row">
-                    <div className="controls">
-                    	<button className="btns" type="button" onClick={e => this.decreaseTempo(e)}> - </button>
-	                        <p className="tagg"> Tempo ({ parseFloat(this.state.tempo).toFixed(1) }x) </p>
-                    	<button className="btns" type="button" onClick={e => this.increaseTempo(e)}> + </button>
+                <div style={{display: (this.state.status[this.state.status.length-1]=='Playing file...')?('initial'):('none')}}>
+                    <hr/> 
+                    <div className="row">
+                        <FilenameLabel error={this.state.error} filename={this.state.filename} />
+                        <div>
+                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.changeAudio(e)} onPlay={this.play.bind(this)} onPause={this.pause.bind(this)} onLoad={e => this.loadVideo(e)} controlsList="nodownload" disablePictureInPicture>
+                            </video>
+                        </div>
                     </div>
-                </div>
 
-                <div className="row">
-                	<div className="lyrics_box" style={{display : this.state.lyrics!==""? 'block' : 'none'}}>
-                        <p>{this.loadLyrics()}</p>
+                    <div className="row">
+                        <div className="controls">
+                            <button className="btns" type="button" onClick={e => this.decreasePitch(e)} className="btn btns btn-secondary"> - </button>
+                            
+                            <p className="tagg"> Pitch ({ (this.state.key<0)?(this.state.key):("+"+this.state.key) } key) </p>
+                            
+                            <button className="btns" type="button" onClick={e => this.increasePitch(e)} className="btn btns btn-secondary"> + </button>
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="controls">
+                            <button type="button" onClick={e => this.decreaseTempo(e)} className="btn btns btn-secondary"> - </button>
+                            
+                            <p className="tagg"> Tempo ({ parseFloat(this.state.tempo).toFixed(1) }x) </p>
+                            
+                            <button type="button" onClick={e => this.increaseTempo(e)} className="btn btns btn-secondary"> + </button>
+                        </div>
                     </div>
                 </div>
 		    </div>

@@ -6,77 +6,88 @@ const port = process.env.PORT || 5000;
 
 const fs = require('fs');
 const path = require('path');
+const {promisify} = require('util');
+const {join} = require('path');
+const mv = promisify(fs.rename);
 
-//soap request (Alsong Lyrics)
+const ytdl = require('ytdl-core');
+
+
+const yts = require( 'yt-search' )
+
 /*
-var xml_str = """
-				<?xml version="1.0" encoding="UTF-8"?>
-				<SOAP-ENV:Envelope
-				xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope"
-				xmlns:SOAP-ENC="http://www.w3.org/2003/05/soap-encoding"
-				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-				xmlns:ns2="ALSongWebServer/Service1Soap"
-				xmlns:ns1="ALSongWebServer"
-				xmlns:ns3="ALSongWebServer/Service1Soap12">
-				<SOAP-ENV:Body><ns1:GetResembleLyricList2><ns1:encData>0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</ns1:encData>
-				<ns1:title>텅빈거리에서</ns1:title>
-				<ns1:artist>015B</ns1:artist>
-				<ns1:pageNo>1</ns1:pageNo>
-				</ns1:GetResembleLyricList2>
-				</SOAP-ENV:Body></SOAP-ENV:Envelope>""";
 
-const util = require('util')
-const soapRequest = require('easy-soap-request');
-const url = 'http://lyrics.alsong.co.kr/alsongwebservice/service1.asmx';
-const sampleHeaders = {
-  'Content-Type': 'application/soap+xml;charset=utf-8',
-};
-const xml = xml_str;
-(async () => {
-  const { response } = await soapRequest({ url: url, headers: sampleHeaders, xml: xml, timeout: 1000 }); // Optional timeout parameter(milliseconds)
-  const { headers, body, statusCode } = response;
-  console.log("\nheader = "+headers);
-  console.log("\nbody = "+body);
-  console.log("\nheader = "+statusCode);
-  console.log("\nto text = "+response);
-  console.log(util.inspect(response, false, null, true));
-})();
+[0] {
+[0]   type: 'video',
+[0]   videoId: 'R-H3tcywlOA',
+[0]   url: 'https://youtube.com/watch?v=R-H3tcywlOA',
+[0]   title: 'Thorn 가시_Buzz 버즈_TJ노래방 (Karaoke/lyrics/romanization/KOREAN)',
+[0]   description: 'Thorn -- Buzz -- TJ Karaoke Song NO. 14684 가시 -- 버즈 -- TJ노래방 곡번호 14684 If you want more K-Pop Karaoke? Subscribe ...',
+[0]   image: 'https://i.ytimg.com/vi/R-H3tcywlOA/hq720.jpg',
+[0]   thumbnail: 'https://i.ytimg.com/vi/R-H3tcywlOA/hq720.jpg',
+[0]   seconds: 247,
+[0]   timestamp: '4:07',
+[0]   duration: { toString: [Function: toString], seconds: 247, timestamp: '4:07' },
+[0]   ago: '6 years ago',
+[0]   views: 1347294,
+[0]   author: {
+[0]     name: 'TJ KARAOKE TJ 노래방 공식 유튜브채널',
+[0]     url: 'https://youtube.com/user/ziller'
+[0]   }
+[0] }
+
+
 */
 
-//youtube dl
-// const youtubedl = require('youtube-dl')
-
-// const video = youtubedl('http://www.youtube.com/watch?v=90AiXO1pAiA',
-//   // Optional arguments passed to youtube-dl.
-//   ['--format=18'],
-//   // Additional options can be given for calling `child_process.execFile()`.
-//   { cwd: __dirname })
-
-// // Will be called when the download starts.
-// video.on('info', function(info) {
-//   console.log('Download started')
-//   console.log('filename: ' + info._filename)
-//   console.log('size: ' + info.size)
-// })
-
-// video.pipe(fs.createWriteStream('myvideo.mp4'))
-const ytdl = require('ytdl-core');
 //140 = audio only
 //133 = 240p video only
 //134 = 360p video only
 //18 = 360p + audio
-// ytdl('http://www.youtube.com/watch?v=kIbMYo7aO1s', {quality: '140',} )
-//   .pipe(fs.createWriteStream('140.mp3'));
-// ytdl('http://www.youtube.com/watch?v=kIbMYo7aO1s', {quality: '133',} )
-//   .pipe(fs.createWriteStream('133.mp4'));
-// ytdl('http://www.youtube.com/watch?v=kIbMYo7aO1s', {quality: '134',} )
-//   .pipe(fs.createWriteStream('134.mp4'));
-// ytdl('http://www.youtube.com/watch?v=kIbMYo7aO1s', {quality: '18',} )
-//   .pipe(fs.createWriteStream('18.mp4'));
+// ytdl('http://www.youtube.com/watch?v=kIbMYo7aO1s', {quality: '140',} ).pipe(fs.createWriteStream(yt_title+'.mp3'));
+// ytdl('http://www.youtube.com/watch?v=kIbMYo7aO1s', {quality: '133',} ).pipe(fs.createWriteStream('133.mp4'));
+// ytdl('http://www.youtube.com/watch?v=kIbMYo7aO1s', {quality: '134',} ).pipe(fs.createWriteStream(yt_title+'.mp4'));
+// ytdl('http://www.youtube.com/watch?v=kIbMYo7aO1s', {quality: '18',} ).pipe(fs.createWriteStream('18.mp4'));
+
+
+const moveYTFile = async (yt_title) => {
+  // Move file ./bar/foo.js to ./baz/qux.js
+  var newLocation = 'downloads/'+yt_title+'.mp4';
+  const mp3_orig = await join(__dirname, yt_title+'.mp4');
+  const mp3_tar = await join(__dirname, 'downloads/'+yt_title+'.mp4'); 
+  await mv(mp3_orig, mp3_tar);
+}
+
+async function downloadYT (yt_url,yt_title) {
+  var filePath = path.resolve(__dirname, '/'+yt_title+'.mp4');
+  const writer = fs.createWriteStream(yt_title+'.mp4');
+
+  // pipe the result stream into a file on disc
+  const response = await ytdl(yt_url, {quality: '18',} ).pipe(writer);
+  // return a promise and resolve when download finishes
+  return new Promise((resolve, reject) => {
+    writer.on('finish', resolve);
+    writer.on('error', reject);
+  });
+}
 
 
 
+async function getSearchResult (title) {
+	const r = await yts(title);
+	const videos = r.videos.slice( 0, 10 );
+	var result = [];
+	videos.forEach( function ( v ) {
+		if(v.seconds <= 300){
+			var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
+			result.push({title: title, time: v.timestamp, url: v.url, author: v.author.name, thumbnail: v.thumbnail});
+		}
+	} );
+	return result;
+}
+
+
+
+//getSearchResult('가시 노래');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -84,7 +95,7 @@ app.get('/api/files', (req, res) => {
 	var files = {
 	  	music : []
 	  };
-	var music_files = fs.readdirSync('./downloads/music/');
+	var music_files = fs.readdirSync('./downloads/');
 	music_files.forEach(file => {
     	if( !(/^\./.test(file)) ){
     		files.music.push({
@@ -96,24 +107,27 @@ app.get('/api/files', (req, res) => {
 	res.send(JSON.stringify(files));
 });
 
+
+app.get('/api/youtubeSearch', async function (req, res) {
+	if(req.query.title != null){
+		var title = req.query.title;
+		var list = await getSearchResult(title);
+		res.contentType('application/json');
+		res.send(JSON.stringify(list));
+	}
+});
+
 app.post('/api/world', (req, res) => {
   res.send(
     `I received your POST request. This is what you sent me: ${req.body.post}`,
   );
 });
 
-app.get('/api/lyrics', (req, res) => {
+app.get('/api/savedMusic', (req, res) => {
 	if(req.query.file != null){
 		var file_name = req.query.file;
-		var data = fs.readFileSync('./downloads/lyrics/'+file_name, 'utf8'); 
-		res.send(data);
-	}
-});
-
-app.get('/api/music', (req, res) => {
-	if(req.query.file != null){
-		var file_name = req.query.file;
-		var filePath = path.join(__dirname, '/downloads/music/'+file_name);
+		var filePath = path.join(__dirname, '/downloads/'+file_name);
+		console.log(filePath);
 		var stat = fs.statSync(filePath);
 
 		res.writeHead(200, {
@@ -124,12 +138,32 @@ app.get('/api/music', (req, res) => {
 	    var readStream = fs.createReadStream(filePath);
 	    readStream.pipe(res);
 	}else{
-		res.send(
-    'file is not specified.',
-  );
+		res.send( 'file is not specified.',);
 	}
-}).listen(2000);
+}).listen(2001);
 
+app.get('/api/music', async function (req, res) {
+	if(req.query.url != null && req.query.title != null){
+		var url = req.query.url;
+		var title = req.query.title;
+
+		await downloadYT(url,title);
+		await moveYTFile(title);
+
+		var filePath = path.join(__dirname, '/downloads/'+title+'.mp4');
+		var stat = fs.statSync(filePath);
+
+		res.writeHead(200, {
+	        'Content-Type': 'audio/mpeg',
+	        'Content-Length': stat.size
+	    });
+
+	    var readStream = fs.createReadStream(filePath);
+	    readStream.pipe(res);
+	}else{
+		res.send('audio file is not specified.',);
+	}
+}).listen(2002);;
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 

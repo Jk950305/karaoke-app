@@ -5,7 +5,6 @@ import './App.css';
 import './css/bootstrap.css';
 import './css/my.css';
 import './css/octicons.css';
-import './temp.js';
 
 ReactDOM.render(
     <App />,

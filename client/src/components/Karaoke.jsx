@@ -1,5 +1,4 @@
 import FilenameLabel from'./FilenameLabel.jsx';
-import TrackControls from'./TrackControls.jsx';
 import ErrorAlert from'./ErrorAlert.jsx';
 
 const EventEmitter = require('events').EventEmitter;
@@ -76,9 +75,13 @@ class Karaoke extends React.Component {
         this.pause();
         this.audioPlayer.seekPercent(0);
         this.setState({action: 'stop', t: 0});
+        this.ref.current.currentTime = 0;
+        this.ref.current.pause();
     }
 
     handleFileChange(e) {
+        console.log(e.target.files);
+        this.setState({showPL : false});
         if (e.target.files.length > 0) {
             this.stop();
 
@@ -213,7 +216,6 @@ class Karaoke extends React.Component {
         if (!this.state.duration) {
             return 0;
         }
-
         return this.state.t / this.state.duration * 100;
     }
 
@@ -275,6 +277,7 @@ class Karaoke extends React.Component {
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
         this.setState({yt_list: body});
+        this.stop();
     };
 
     async getSavedMusic(e) {
@@ -337,7 +340,7 @@ class Karaoke extends React.Component {
         e.preventDefault();
         this.setState({yt_list:[],yt_title:""});
         await this.getMusic(yt_url,yt_title);
-
+        this.stop();
     }
 
 
@@ -416,7 +419,7 @@ class Karaoke extends React.Component {
 
 
         var yt_list = [];
-        for(const [key, value] of this.state.yt_list.entries()){
+        for(const [key,value] of this.state.yt_list.entries()){
             yt_list.push(
                 <tr>
                     <td>
@@ -454,7 +457,6 @@ class Karaoke extends React.Component {
                             type="file"
                             style={{display: 'none'}}
                             onChange={e => this.handleFileChange(e)}
-                            onClick={this.hidePlaylist.bind(this)}
                         />
                         Upload from Your Device
                     </label>
@@ -496,12 +498,12 @@ class Karaoke extends React.Component {
                 <div className="row" style={{display : (this.state.showPL)?( 'initial' ):( 'none' )}}>
                     <hr/>
                     <div className="row">
-                        <table className="music_table">
+                        <table className="music_table table table-hover">
                             <tbody>
                                 {items}
                             </tbody>
                         </table>
-                        <a href="#" onClick={this.hidePlaylist.bind(this)}><p style={{float: 'right',fontSize:'10px'}}>close</p></a>
+                        <p onClick={this.hidePlaylist.bind(this)} style={{float: 'right',fontSize:'10px'}} >close</p>
                     </div>
                     
                 </div>
@@ -511,7 +513,7 @@ class Karaoke extends React.Component {
                     <hr/> 
                     <div className="row">
                         <div className="row">
-                            <table>
+                            <table className=" table table-hover">
                                 <tbody>
                                         {yt_list}
                                 </tbody>
@@ -521,23 +523,23 @@ class Karaoke extends React.Component {
                 </div>
 
 
-                <div style={{display: (this.state.status[this.state.status.length-1]=='Playing file...')?('initial'):('none')}}>
+                <div style={{display: (this.state.status[this.state.status.length-1]==='Playing file...')?('initial'):('none')}}>
                     <hr/> 
                     <div className="row">
                         <FilenameLabel error={this.state.error} filename={this.state.filename} />
                         <div>
-                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.changeAudio(e)} onPlay={this.play.bind(this)} onPause={this.pause.bind(this)} onLoad={e => this.loadVideo(e)} controlsList="nodownload" disablePictureInPicture>
+                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.changeAudio(e)} onPlay={this.play.bind(this)} onPause={this.pause.bind(this)} controlsList="nodownload" disablePictureInPicture>
                             </video>
                         </div>
                     </div>
 
                     <div className="row">
                         <div className="controls">
-                            <button className="btns" type="button" onClick={e => this.decreasePitch(e)} className="btn btns btn-secondary"> - </button>
+                            <button type="button" onClick={e => this.decreasePitch(e)} className="btn btns btn-secondary"> - </button>
                             
                             <p className="tagg"> Pitch ({ (this.state.key<0)?(this.state.key):("+"+this.state.key) } key) </p>
                             
-                            <button className="btns" type="button" onClick={e => this.increasePitch(e)} className="btn btns btn-secondary"> + </button>
+                            <button type="button" onClick={e => this.increasePitch(e)} className="btn btns btn-secondary"> + </button>
                         </div>
                     </div>
 
@@ -550,6 +552,9 @@ class Karaoke extends React.Component {
                             <button type="button" onClick={e => this.increaseTempo(e)} className="btn btns btn-secondary"> + </button>
                         </div>
                     </div>
+                </div>
+                <div style={{width:'100%', display: (false)?('initial'):('none')}}>
+                    <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" style={{ width:'50%',marginLeft:'25%', marginRight:'25%'}} alt="loading..." />
                 </div>
 		    </div>
 

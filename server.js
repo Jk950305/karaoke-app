@@ -11,8 +11,6 @@ const {join} = require('path');
 const mv = promisify(fs.rename);
 
 const ytdl = require('ytdl-core');
-
-
 const yts = require( 'yt-search' )
 
 /*
@@ -85,9 +83,6 @@ async function getSearchResult (title) {
 	return result;
 }
 
-
-
-//getSearchResult('가시 노래');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -107,7 +102,6 @@ app.get('/api/files', (req, res) => {
 	res.send(JSON.stringify(files));
 });
 
-
 app.get('/api/youtubeSearch', async function (req, res) {
 	if(req.query.title != null){
 		var title = req.query.title;
@@ -117,17 +111,10 @@ app.get('/api/youtubeSearch', async function (req, res) {
 	}
 });
 
-app.post('/api/world', (req, res) => {
-  res.send(
-    `I received your POST request. This is what you sent me: ${req.body.post}`,
-  );
-});
-
 app.get('/api/savedMusic', (req, res) => {
 	if(req.query.file != null){
 		var file_name = req.query.file;
 		var filePath = path.join(__dirname, '/downloads/'+file_name);
-		console.log(filePath);
 		var stat = fs.statSync(filePath);
 
 		res.writeHead(200, {
@@ -147,23 +134,23 @@ app.get('/api/music', async function (req, res) {
 		var url = req.query.url;
 		var title = req.query.title;
 
-		await downloadYT(url,title);
-		await moveYTFile(title);
+		//await downloadYT(url,title);
+		//await moveYTFile(title);
 
-		var filePath = path.join(__dirname, '/downloads/'+title+'.mp4');
-		var stat = fs.statSync(filePath);
+		//var filePath = path.join(__dirname, '/downloads/'+title+'.mp4');
+		//var stat = fs.statSync(filePath);
 
 		res.writeHead(200, {
-	        'Content-Type': 'audio/mpeg',
-	        'Content-Length': stat.size
+	        'Content-Type': 'audio/mpeg'
 	    });
 
-	    var readStream = fs.createReadStream(filePath);
-	    readStream.pipe(res);
+	    //var readStream = fs.createReadStream(filePath);
+	    //readStream.pipe(res);
+	    ytdl(url, {quality: '18',} ).pipe(res);
 	}else{
 		res.send('audio file is not specified.',);
 	}
-}).listen(2002);;
+}).listen(2002);
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 

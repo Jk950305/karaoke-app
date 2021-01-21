@@ -169,6 +169,7 @@ class Karaoke extends React.Component {
     };
 
     //send title to be searched to server and get <= 10 short videos 
+    /*
     async searchOnYoutube(e) {
         e.preventDefault();
         var title = e.target[0].value;
@@ -178,6 +179,7 @@ class Karaoke extends React.Component {
         this.setState({yt_list: body});
         this.stop();
     };
+    */
 
 
     //clear media and get new media blob
@@ -293,6 +295,48 @@ class Karaoke extends React.Component {
     	}
     }
 
+    async searchOnYoutube(e) {
+        e.preventDefault();
+        this.setState({showPL: false});
+        var search_title = e.target[0].value;
+        const api_key='AIzaSyDLhB4aEMKZVBPi3Siallc3xfAaEpt9E8g';
+        const youtube = axios.create({
+            baseURL:'https://www.googleapis.com/youtube/v3',
+            params:
+            {
+                part:'id,snippet',
+                maxResults:5,
+                key: api_key
+            }
+        });
+        const res = await youtube.get('/search', {params: { q: search_title }});
+        var result = [];
+        var tmp = ""
+        for(let i=0;i<res.data.items.length;i++){
+            tmp += (i===0)?(""):(",");
+            tmp += res.data.items[i].id.videoId;
+        }
+
+        const youtube2 = axios.create({
+            baseURL:'https://www.googleapis.com/youtube/v3',
+            params:{ part:'contentDetails', key: api_key }
+            });
+        const details = await youtube2.get('/videos', {params: {id: tmp }});
+
+        for(let i=0;i<res.data.items.length;i++){
+            var str = (details.data.items[i].contentDetails.duration).replace(/P|T|S/g,'').split('M');
+            var sec = (str[1].length>1)?(str[1]):("0"+str[1]);
+            var duration = str[0]+":"+sec;
+            if(str[0] <= 5){
+                var v = res.data.items[i].snippet;
+                var url = "http://www.youtube.com/watch?v="+res.data.items[i].id.videoId;
+                var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
+                result.push({title: title, time: duration, url: url, author: v.channelTitle, thumbnail: v.thumbnails.medium.url});
+            }
+        }
+        this.setState({yt_list: result});
+        this.stop();
+    }
 
 
 	render (){
@@ -360,12 +404,12 @@ class Karaoke extends React.Component {
                     </form>
                 </div>
 
-                <div className="row">
+                {/*<div className="row">
                     <form onSubmit={e => this.getVideoFromYoutube(e)} >
                         <input id="yt_title" value={this.state.yt_url} onChange={e => this.handleURL(e)} type="text" placeholder="Enter Youtube URL" className="form-control"/>
                         <input type="submit" className="btn btn-danger btn-md" value="Search"/>
                     </form>
-                </div>
+                </div>*/}
 
                 <ErrorAlert error={this.state.error} />
 

@@ -21,30 +21,6 @@ const {google} = require('googleapis');
 
 
 
-async function getSearchResultGoogle (title) {
-	const youtube = google.youtube({
-	  version: 'v3',
-	  auth: 'AIzaSyDLhB4aEMKZVBPi3Siallc3xfAaEpt9E8g'
-	});
-
-	const videos = await youtube.search.list({
-	    part: 'id,snippet',
-	    q: title,
-	});
-
-	var result = [];
-	for(var i=0;i<videos.data.items.length;i++){
-		var v = videos.data.items[i].snippet;
-		var url = "http://www.youtube.com/watch?v="+videos.data.items[i].id.videoId;
-		var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
-		result.push({title: title, time: "", url: url, author: v.channelTitle, thumbnail: v.thumbnails.medium.url});
-	
-	}
-	return result;
-}
-getSearchResultGoogle('너를보내고 노래방');
-
-
 
 //move file directory
 const moveYTFile = async (yt_title) => {
@@ -88,6 +64,27 @@ async function getSearchResultYTSR (title) {
 	
 	}
 	console.log(result);
+	return result;
+}
+async function getSearchResultGoogle (title) {
+	const youtube = google.youtube({
+	  version: 'v3',
+	  auth: 'AIzaSyDLhB4aEMKZVBPi3Siallc3xfAaEpt9E8g'
+	});
+
+	const videos = await youtube.search.list({
+	    part: 'id,snippet',
+	    q: title,
+	});
+
+	var result = [];
+	for(var i=0;i<videos.data.items.length;i++){
+		var v = videos.data.items[i].snippet;
+		var url = "http://www.youtube.com/watch?v="+videos.data.items[i].id.videoId;
+		var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
+		result.push({title: title, time: "", url: url, author: v.channelTitle, thumbnail: v.thumbnails.medium.url});
+	
+	}
 	return result;
 }
 

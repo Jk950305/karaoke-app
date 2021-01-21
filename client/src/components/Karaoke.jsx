@@ -29,6 +29,7 @@ class Karaoke extends React.Component {
             yt_title: "",
             yt_url: "",
             yt_list: [],
+            loading: ""
         };
 
         //create an observer
@@ -98,8 +99,9 @@ class Karaoke extends React.Component {
     }
     //get file inputs from user to be played
     handleFileChange(e) {
-        this.setState({showPL : false});
+        e.preventDefault();
         if (e.target.files.length > 0) {
+            this.setState({showPL : false,loading:'loading'});
             const filename = e.target.value.replace('C:\\fakepath\\', '');
             const file = e.target.files[0];
             this.loadFile(file,filename);
@@ -108,13 +110,24 @@ class Karaoke extends React.Component {
     //handle seek in video player
     handleSeek(e) {
         e.preventDefault();
-        var current = this.ref.current.currentTime;
-        if(current<this.prev-0.5*this.state.tempo || this.prev+0.5*this.state.tempo<current){
+        if(this.ref.current!=null){
+            var current = this.ref.current.currentTime;
+            if(current<this.prev-0.5*this.state.tempo || this.prev+0.5*this.state.tempo<current || current<0.5){
+                const percent = this.ref.current.currentTime/this.state.duration*100;
+                this.audioPlayer.seekPercent(percent);
+                this.play();
+            }
+            this.prev = current;
+        }
+    }
+    syncMusic(e){
+        e.preventDefault();
+        if(this.ref.current!=null){
+            var current = this.ref.current.currentTime;
             const percent = this.ref.current.currentTime/this.state.duration*100;
             this.audioPlayer.seekPercent(percent);
             this.play();
         }
-        this.prev = current;
     }
     //load file and play blob on both audio & video
     loadFile(file,filename) {
@@ -144,8 +157,8 @@ class Karaoke extends React.Component {
                 return;
             }
             this.audioPlayer.setBuffer(buffer);
+            this.setState({loading: 'loaded'});
         };
-        this.stop();
     }
 
 
@@ -168,23 +181,10 @@ class Karaoke extends React.Component {
         return body;
     };
 
-    //send title to be searched to server and get <= 10 short videos 
-    /*
-    async searchOnYoutube(e) {
-        e.preventDefault();
-        var title = e.target[0].value;
-        const response = await fetch('/api/youtubeSearch?title='+title);
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        this.setState({yt_list: body});
-        this.stop();
-    };
-    */
-
-
     //clear media and get new media blob
     async getMedia(e,yt_title,yt_url){
         e.preventDefault();
+
         this.setState({yt_list:[],yt_title:""});
         this.getMusic(yt_url,yt_title);
     }
@@ -196,7 +196,7 @@ class Karaoke extends React.Component {
     }
     //get video blob
     async getMusic(yt_url,yt_title) {
-        this.setState({showPL:false});
+        this.setState({showPL:false,loading:'loading'});
         var file;
 
         var url = (yt_url==="")?('/api/savedMusic?file='+yt_title):('/api/music?url='+yt_url+'&title='+yt_title);
@@ -238,63 +238,7 @@ class Karaoke extends React.Component {
         this.getMusic(url,url.substring(url.length-6));
     }
 
-
-/* Soundsource related methods */
-    //get adjusted pitch value
-    handlePitchChange(e) {
-        const pitch = this.getPitchValue(e.target.value);
-        this.audioPlayer.pitch = pitch;
-        this.setState({pitch});
-    }
-    decreasePitch(e){
-    	if(this.state.pitch > 0.5 && this.state.pitch <= 2){
-    		const key = this.state.key-1;
-    		const pitch = this.getPitchValue(key);
-	        this.audioPlayer.pitch = pitch;
-	        this.setState({key});
-	        this.setState({pitch});
-    	}
-    }
-    increasePitch(e){
-    	if(this.state.pitch >= 0.5 && this.state.pitch < 2){
-    		const key = this.state.key+1;
-    		const pitch = this.getPitchValue(key);
-	        this.audioPlayer.pitch = pitch;
-	        this.setState({key});
-	        this.setState({pitch});
-    	}
-    }
-    getPitchValue(val) {
-        var s_var = (val>=0)?(parseInt(val)):(12+parseInt(val));
-        //https://en.wikipedia.org/wiki/12_equal_temperament
-        var num = Math.pow(2, (s_var/12)).toFixed(3);
-        const pitch = (val>=0)?(num):(num/2);
-        return pitch;
-    }
-
-    //Handle Tempo Changes 
-    handleTempoChange(e) {
-        const tempo = e.target.value;
-        this.audioPlayer.tempo = tempo;
-        this.setState({tempo});
-    }
-    decreaseTempo(e) {
-    	if(this.state.tempo > 0.5 && this.state.tempo <= 2){
-            const tempo = +(Math.round(this.state.tempo-0.1 + "e+2")  + "e-2");
-	        this.audioPlayer.tempo = tempo;
-	        this.setState({tempo});
-            this.ref.current.playbackRate = tempo;
-    	}
-    }
-    increaseTempo(e) {
-        if(this.state.tempo >= 0.5 && this.state.tempo < 2){
-    		const tempo = +(Math.round(this.state.tempo+0.1 + "e+2")  + "e-2");
-	        this.audioPlayer.tempo = tempo;
-	        this.setState({tempo});
-            this.ref.current.playbackRate = tempo;
-    	}
-    }
-
+    //send title to be searched to server and get short videos 
     async searchOnYoutube(e) {
         e.preventDefault();
         this.setState({showPL: false});
@@ -335,7 +279,66 @@ class Karaoke extends React.Component {
             }
         }
         this.setState({yt_list: result});
-        this.stop();
+    }
+
+
+/* Soundsource related methods */
+    //get adjusted pitch value
+    handlePitchChange(e) {
+        const pitch = this.getPitchValue(e.target.value);
+        this.audioPlayer.pitch = pitch;
+        this.setState({pitch});
+    }
+    decreasePitch(e){
+    	if(this.state.pitch > 0.5 && this.state.pitch <= 2){
+    		const key = this.state.key-1;
+    		const pitch = this.getPitchValue(key);
+	        this.audioPlayer.pitch = pitch;
+	        this.setState({key});
+	        this.setState({pitch});
+    	}
+    }
+    increasePitch(e){
+    	if(this.state.pitch >= 0.5 && this.state.pitch < 2){
+    		const key = this.state.key+1;
+    		const pitch = this.getPitchValue(key);
+	        this.audioPlayer.pitch = pitch;
+	        this.setState({key});
+	        this.setState({pitch});
+    	}
+    }
+    getPitchValue(val) {
+        var s_var = (val>=0)?(parseInt(val)):(12+parseInt(val));
+        //https://en.wikipedia.org/wiki/12_equal_temperament
+        var num = Math.pow(2, (s_var/12)).toFixed(3);
+        const pitch = (val>=0)?(num):(num/2);
+        return pitch;
+    }
+
+    //Handle Tempo Changes 
+    handleTempoChange(e) {
+        e.preventDefault();
+        const tempo = e.target.value;
+        this.audioPlayer.tempo = tempo;
+        this.setState({tempo});
+    }
+    decreaseTempo(e) {
+        e.preventDefault();
+    	if(this.state.tempo > 0.5 && this.state.tempo <= 2){
+            const tempo = +(Math.round(this.state.tempo-0.1 + "e+2")  + "e-2");
+	        this.audioPlayer.tempo = tempo;
+	        this.setState({tempo});
+            this.ref.current.playbackRate = tempo;
+    	}
+    }
+    increaseTempo(e) {
+        e.preventDefault();
+        if(this.state.tempo >= 0.5 && this.state.tempo < 2){
+    		const tempo = +(Math.round(this.state.tempo+0.1 + "e+2")  + "e-2");
+	        this.audioPlayer.tempo = tempo;
+	        this.setState({tempo});
+            this.ref.current.playbackRate = tempo;
+    	}
     }
 
 
@@ -364,7 +367,6 @@ class Karaoke extends React.Component {
         }
 
 	  	return (
-
 	  		<div className="Karaoke">
                 <div id="header" className="row title_header alert alert-info">
 	  		  	    무한코인노래방
@@ -443,12 +445,12 @@ class Karaoke extends React.Component {
                 </div>
 
 
-                <div style={{display: (this.state.action!=='load')?('initial'):('none')}}>
+                <div style={{display: (this.state.loading ==='loaded')?('initial'):('none')}}>
                     <hr/> 
                     <div className="row">
                         <FilenameLabel error={this.state.error} filename={this.state.filename} />
                         <div>
-                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.handleSeek(e)} onPlay={this.play.bind(this)} onPause={this.pause.bind(this)} controlsList="nodownload" disablePictureInPicture>
+                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.handleSeek(e)} onPlay={e => this.syncMusic(e)} onPause={this.pause.bind(this)} controlsList="nodownload" disablePictureInPicture autoPlay>
                             </video>
                         </div>
                     </div>
@@ -472,8 +474,13 @@ class Karaoke extends React.Component {
                             <button type="button" onClick={e => this.increaseTempo(e)} className="btn btns btn-secondary"> + </button>
                         </div>
                     </div>
+                    <div className="row" style={{display: 'none'}}>
+                        <div className="">
+                            <button type="button" onClick={e => this.syncMusic(e)} className="btn btns btn-secondary"> sync </button>
+                        </div>
+                    </div>
                 </div>
-                <div style={{width:'100%', display: (this.state.action==='load')?('initial'):('none')}}>
+                <div style={{width:'100%', display: (this.state.loading ==='loading')?('initial'):('none')}}>
                     <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" style={{ width:'50%',marginLeft:'25%', marginRight:'25%'}} alt="loading..." />
                 </div>
 		    </div>

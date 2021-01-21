@@ -2,7 +2,7 @@
   "name": "example-create-react-app-express",
   "version": "1.0.0",
   "scripts": {
-    "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build",
+    "heroku-postbuild": "cd client && yarn && yarn run build",
     "client": "cd client && yarn start",
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
@@ -16,7 +16,8 @@
     "ffmpeg": "^0.0.4",
     "youtube-dl": "^3.1.0",
     "youtube-mp3-downloader": "^0.7.6",
-    "yt-search": "^2.5.2"
+    "yt-search": "^2.5.2",
+    "ytdl-core": "^4.4.4"
   },
   "devDependencies": {
     "concurrently": "^5.3.0"

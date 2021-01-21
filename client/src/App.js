@@ -13,7 +13,7 @@ render() {
         <div className="App">
             <div>
                 <div>
-                    <Karaoke/>
+                <Karaoke/>
                     {/*<BrowserRouter>
                         <div>
                             <Navigation />

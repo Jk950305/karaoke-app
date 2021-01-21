@@ -161,7 +161,7 @@ class Karaoke extends React.Component {
     //get music filenames from server
     getFiles = async () => {
         const response = await fetch('/api/files');
-        const body = await response.json();
+        const body = response.json();
         if (response.status !== 200) throw Error(body.message);
         return body;
     };
@@ -182,7 +182,7 @@ class Karaoke extends React.Component {
     async getMedia(e,yt_title,yt_url){
         e.preventDefault();
         this.setState({yt_list:[],yt_title:""});
-        await this.getMusic(yt_url,yt_title);
+        this.getMusic(yt_url,yt_title);
     }
     //send a saved music filename and receive blob of the music
     async getSavedMusic(e) {

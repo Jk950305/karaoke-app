@@ -243,7 +243,7 @@ class Karaoke extends React.Component {
         e.preventDefault();
         this.setState({showPL: false});
         var search_title = e.target[0].value;
-        const api_key='AIzaSyDLhB4aEMKZVBPi3Siallc3xfAaEpt9E8g';
+        const api_key='AIzaSyC6keBXIih9rgJPf3KyzWrplSBLS_YugJI';
         const youtube = axios.create({
             baseURL:'https://www.googleapis.com/youtube/v3',
             params:
@@ -340,6 +340,10 @@ class Karaoke extends React.Component {
             this.ref.current.playbackRate = tempo;
     	}
     }
+    refresh(e){
+        e.preventDeafault();
+        window.location.reload(true);
+    }
 
 
 	render (){
@@ -368,13 +372,13 @@ class Karaoke extends React.Component {
 
 	  	return (
 	  		<div className="Karaoke">
-                <div id="header" className="row title_header alert alert-info">
+                <div id="header" className="title_header alert alert-info">
 	  		  	    무한코인노래방
                 </div>
 
-                <div className="row" style={{marginBottom: '1em', marginLeft:'auto', marginRight:'auto'}}>
+                <div className="row">
                     <label
-                        className="btn btn-primary btn-md"
+                        className="btn btn-primary btn-md file-btns"
                         htmlFor="upload-file"
                         style={{marginRight: '0.25em', marginBottom: '1em'}}
                     >
@@ -388,7 +392,7 @@ class Karaoke extends React.Component {
                         Upload from Your Device
                     </label>
                     <button
-                        className="btn btn-primary btn-md"
+                        className="btn btn-primary btn-md file-btns"
                         style={{marginLeft: '0.25em',marginBottom: '1em', display: (this.state.savedMusic.length>0)?(''):('none')}}
                         id="choose-file"
                         onClick={(this.state.showPL)?(e => this.hidePlaylist(e)):(e => this.showPlaylist(e))}
@@ -400,7 +404,7 @@ class Karaoke extends React.Component {
                 </div>
 
                 <div className="row">
-                    <form onSubmit={e => this.searchOnYoutube(e)} >
+                    <form onSubmit={e => this.searchOnYoutube(e)} className="youtube-form">
                         <input id="yt_title" value={this.state.yt_title} onChange={e => this.handleTitle(e)} type="text" placeholder="Search on Youtube" className="form-control"/>
                         <input type="submit" className="btn btn-danger btn-md" value="Search"/>
                     </form>
@@ -419,28 +423,23 @@ class Karaoke extends React.Component {
                  
                 <div className="row" style={{display : (this.state.showPL)?( 'initial' ):( 'none' )}}>
                     <hr/>
-                    <div className="row">
                         <table className="music_table table table-hover">
                             <tbody>
                                 {items}
                             </tbody>
                         </table>
                         <p onClick={this.hidePlaylist.bind(this)} style={{float: 'right',fontSize:'10px'}} >close</p>
-                    </div>
-                    
                 </div>
             
 
                 <div className="yt_table" style={{display: (this.state.yt_list.length>0)?('initial'):('none')}}>
                     <hr/> 
                     <div className="row">
-                        <div className="row">
-                            <table className=" table table-hover">
-                                <tbody>
-                                        {yt_list}
-                                </tbody>
-                            </table>
-                        </div>
+                        <table className=" table table-hover">
+                            <tbody>
+                                    {yt_list}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -455,24 +454,26 @@ class Karaoke extends React.Component {
                         </div>
                     </div>
 
-                    <div className="row">
-                        <div className="controls">
+                    <div className="row controls">
                             <button type="button" onClick={e => this.decreasePitch(e)} className="btn btns btn-secondary"> - </button>
                             
-                            <p className="tagg"> Pitch ({ (this.state.key<0)?(this.state.key):("+"+this.state.key) } key) </p>
+                            <div className="tagg">
+                                <p> 
+                                    Pitch ({ (this.state.key<0)?(this.state.key):("+"+this.state.key) } key) 
+                                </p>
+                            </div>
                             
                             <button type="button" onClick={e => this.increasePitch(e)} className="btn btns btn-secondary"> + </button>
-                        </div>
                     </div>
 
-                    <div className="row">
-                        <div className="controls">
+                    <div className="row controls" style={{marginTop:'0.5em'}}>
                             <button type="button" onClick={e => this.decreaseTempo(e)} className="btn btns btn-secondary"> - </button>
-                            
-                            <p className="tagg"> Tempo ({ parseFloat(this.state.tempo).toFixed(1) }x) </p>
+                            <div className="tagg">
+                                <p> Tempo ({ parseFloat(this.state.tempo).toFixed(1) }x) </p>
+                            </div>
                             
                             <button type="button" onClick={e => this.increaseTempo(e)} className="btn btns btn-secondary"> + </button>
-                        </div>
+
                     </div>
                     <div className="row" style={{display: 'none'}}>
                         <div className="">

@@ -27,6 +27,7 @@ class Karaoke extends React.Component {
             showPL : false,
             savedMusic: [],
             yt_title: "",
+            yt_url: "",
             yt_list: [],
         };
 
@@ -54,6 +55,7 @@ class Karaoke extends React.Component {
         this.inputRef = React.createRef();
         this.handleSeek = this.handleSeek.bind(this);
         this.handleTitle = this.handleTitle.bind(this);
+        this.handleURL = this.handleURL.bind(this);
         this.loadFile = this.loadFile.bind(this);
         this.prev = 0;
     }
@@ -224,6 +226,15 @@ class Karaoke extends React.Component {
     handleTitle(e){
         this.setState({yt_title : e.target.value});
     }
+    handleURL(e){
+        this.setState({yt_url : e.target.value});
+    }
+    getVideoFromYoutube(e){
+        e.preventDefault();
+        var url = e.target[0].value;
+        this.setState({yt_list:[],yt_title:""});
+        this.getMusic(url,url.substring(url.length-6));
+    }
 
 
 /* Soundsource related methods */
@@ -345,6 +356,13 @@ class Karaoke extends React.Component {
                 <div className="row">
                     <form onSubmit={e => this.searchOnYoutube(e)} >
                         <input id="yt_title" value={this.state.yt_title} onChange={e => this.handleTitle(e)} type="text" placeholder="Search on Youtube" className="form-control"/>
+                        <input type="submit" className="btn btn-danger btn-md" value="Search"/>
+                    </form>
+                </div>
+
+                <div className="row">
+                    <form onSubmit={e => this.getVideoFromYoutube(e)} >
+                        <input id="yt_title" value={this.state.yt_url} onChange={e => this.handleURL(e)} type="text" placeholder="Enter Youtube URL" className="form-control"/>
                         <input type="submit" className="btn btn-danger btn-md" value="Search"/>
                     </form>
                 </div>

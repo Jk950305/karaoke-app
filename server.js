@@ -12,33 +12,32 @@ const mv = promisify(fs.rename);
 
 const ytdl = require('ytdl-core');
 const yts = require( 'yt-search' );
+// const cors = require('cors');
 
 
-//Heroku requirements lines
-const whitelist = ['http://localhost:3000', 'http://localhost:5000', 'https://infinity-coin-karaoke.heroku...'];
-const corsOptions = {
-  origin: function (origin, callback) {
-    console.log("** Origin of request " + origin)
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      console.log("Origin acceptable")
-      callback(null, true)
-    } else {
-      console.log("Origin rejected")
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
-
-
-app.use(cors(corsOptions))
-if (process.env.NODE_ENV === 'production') {
-  // Serve any static files
-  app.use(express.static(path.join(__dirname, 'client/build')));
-// Handle React routing, return all requests to React app
-  app.get('*', function(req, res) {
-    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-  });
-}
+// //Heroku requirements lines
+// const whitelist = ['http://localhost:3000', 'http://localhost:5000', 'https://infinity-coin-karaoke.heroku...'];
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     console.log("** Origin of request " + origin)
+//     if (whitelist.indexOf(origin) !== -1 || !origin) {
+//       console.log("Origin acceptable")
+//       callback(null, true)
+//     } else {
+//       console.log("Origin rejected")
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   }
+// }
+// app.use(cors(corsOptions))
+// if (process.env.NODE_ENV === 'production') {
+//   // Serve any static files
+//   app.use(express.static(path.join(__dirname, 'client/build')));
+// // Handle React routing, return all requests to React app
+//   app.get('*', function(req, res) {
+//     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+//   });
+// }
 
 
 

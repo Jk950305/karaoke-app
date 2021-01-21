@@ -6,8 +6,7 @@
     "client": "cd client && yarn start",
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
-    "start": "node server.js",
-  
+    "start": "node server.js"
   },
   "dependencies": {
     "body-parser": "^1.18.3",

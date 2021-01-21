@@ -94,4 +94,4 @@ class AudioPlayer {
     }
 }
 
-module.exports = AudioPlayer;
+export default AudioPlayer;

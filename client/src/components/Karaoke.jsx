@@ -1,9 +1,10 @@
 import FilenameLabel from'./FilenameLabel.jsx';
 import ErrorAlert from'./ErrorAlert.jsx';
+import AudioPlayer from './../lib/AudioPlayer';
 
 const EventEmitter = require('events').EventEmitter;
 const React = require('react');
-const AudioPlayer = require('./../lib/AudioPlayer');
+//const AudioPlayer = require('./../lib/AudioPlayer');
 
 class Karaoke extends React.Component {
 
@@ -60,6 +61,7 @@ class Karaoke extends React.Component {
     //At the beginning of the app
     componentDidMount() {
         this.stop();
+        console.log('1');
         this.getMusicList();
     }
     //At the end of the app
@@ -158,8 +160,10 @@ class Karaoke extends React.Component {
     }
     //get music filenames from server
     getFiles = async () => {
+        console.log('asd');
         const response = await fetch('/api/files');
         const body = await response.json();
+        console.log(body);
         if (response.status !== 200) throw Error(body.message);
         return body;
     };

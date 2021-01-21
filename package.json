@@ -2,6 +2,7 @@
   "name": "example-create-react-app-express",
   "version": "1.0.0",
   "scripts": {
+    "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build",
     "client": "cd client && yarn start",
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
@@ -9,6 +10,7 @@
   },
   "dependencies": {
     "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
     "easy-soap-request": "^4.1.2",
     "express": "^4.16.4",
     "ffmpeg": "^0.0.4",

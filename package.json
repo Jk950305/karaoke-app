@@ -2,7 +2,7 @@
   "name": "example-create-react-app-express",
   "version": "1.0.0",
   "scripts": {
-    "heroku-postbuild": "cd client && yarn start && cd .. && nodemon server.js",
+    "heroku-postbuild": "cd client && yarn && yarn run build && yarn start && cd .. && nodemon server.js",
     "client": "cd client && yarn start",
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",

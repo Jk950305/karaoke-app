@@ -16,24 +16,34 @@ const cors = require('cors');
 
 var ytsr = require('ytsr');
 
+const {google} = require('googleapis');
 
-async function getSearchResultYTSR (title) {
-	const videos = await ytsr(title, { limit: 5 });
+
+
+
+async function getSearchResultGoogle (title) {
+	const youtube = google.youtube({
+	  version: 'v3',
+	  auth: 'AIzaSyDLhB4aEMKZVBPi3Siallc3xfAaEpt9E8g'
+	});
+
+	const videos = await youtube.search.list({
+	    part: 'id,snippet',
+	    q: title,
+	});
+
 	var result = [];
-	//console.log(videos);
-
-	for(var i=0;i<videos.items.length;i++){
-		var v = videos.items[i];
-		console.log(v);
+	for(var i=0;i<videos.data.items.length;i++){
+		var v = videos.data.items[i].snippet;
+		var url = "http://www.youtube.com/watch?v="+videos.data.items[i].id.videoId;
 		var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
-		result.push({title: title, time: v.duration, url: v.url, author: v.author.name, thumbnail: v.bestThumbnail.url});
+		result.push({title: title, time: "", url: url, author: v.channelTitle, thumbnail: v.thumbnails.medium.url});
 	
 	}
-	console.log(result);
 	return result;
 }
+getSearchResultGoogle('너를보내고 노래방');
 
-//tmpp('너를보내고');
 
 
 //move file directory
@@ -68,6 +78,18 @@ async function getSearchResult (title) {
 	} );
 	return result;
 }
+async function getSearchResultYTSR (title) {
+	const videos = await ytsr(title, { limit: 5 });
+	var result = [];
+	for(var i=0;i<videos.items.length;i++){
+		var v = videos.items[i];
+		var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
+		result.push({title: title, time: v.duration, url: v.url, author: v.author.name, thumbnail: v.bestThumbnail.url});
+	
+	}
+	console.log(result);
+	return result;
+}
 
 
 app.use(express.static(path.join(__dirname, 'client/build')));
@@ -96,7 +118,8 @@ app.get('/api/youtubeSearch', async function (req, res) {
 	if(req.query.title != null){
 		var title = req.query.title;
 		//var list = await getSearchResult(title);
-		var list = await getSearchResultYTSR(title);
+		//var list = await getSearchResultYTSR(title);
+		var list = await getSearchResultGoogle(title);
 		res.contentType('application/json');
 		res.send(JSON.stringify(list));
 	}

@@ -14,6 +14,27 @@ const ytdl = require('ytdl-core');
 const yts = require( 'yt-search' );
 const cors = require('cors');
 
+var ytsr = require('ytsr');
+
+
+async function getSearchResultYTSR (title) {
+	const videos = await ytsr(title, { limit: 5 });
+	var result = [];
+	//console.log(videos);
+
+	for(var i=0;i<videos.items.length;i++){
+		var v = videos.items[i];
+		console.log(v);
+		var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
+		result.push({title: title, time: v.duration, url: v.url, author: v.author.name, thumbnail: v.bestThumbnail.url});
+	
+	}
+	console.log(result);
+	return result;
+}
+
+//tmpp('너를보내고');
+
 
 //move file directory
 const moveYTFile = async (yt_title) => {
@@ -74,7 +95,8 @@ app.get('/api/files', (req, res) => {
 app.get('/api/youtubeSearch', async function (req, res) {
 	if(req.query.title != null){
 		var title = req.query.title;
-		var list = await getSearchResult(title);
+		//var list = await getSearchResult(title);
+		var list = await getSearchResultYTSR(title);
 		res.contentType('application/json');
 		res.send(JSON.stringify(list));
 	}

@@ -58,7 +58,6 @@ class Karaoke extends React.Component {
         this.handleTitle = this.handleTitle.bind(this);
         this.handleURL = this.handleURL.bind(this);
         this.loadFile = this.loadFile.bind(this);
-        this.prev = 0;
     }
 
 /* React Page related methods */
@@ -72,6 +71,7 @@ class Karaoke extends React.Component {
         this.stop();
     }
 
+/* Video&Audio player methods */
     //only gets called from video player
     play() {
         if (this.state.action !== 'play') {
@@ -80,8 +80,6 @@ class Karaoke extends React.Component {
             this.ref.current.playbackRate = this.state.tempo;
         }
     }
-
-/* Video&Audio player methods */
     //called iff video player is paused
     pause() {
         if (this.state.action === 'play') {
@@ -101,6 +99,7 @@ class Karaoke extends React.Component {
     handleFileChange(e) {
         e.preventDefault();
         if (e.target.files.length > 0) {
+            this.stop();
             this.setState({showPL : false,loading:'loading'});
             const filename = e.target.value.replace('C:\\fakepath\\', '');
             const file = e.target.files[0];
@@ -123,7 +122,6 @@ class Karaoke extends React.Component {
     syncMusic(e){
         e.preventDefault();
         if(this.ref.current!=null){
-            var current = this.ref.current.currentTime;
             const percent = this.ref.current.currentTime/this.state.duration*100;
             this.audioPlayer.seekPercent(percent);
             this.play();
@@ -131,7 +129,6 @@ class Karaoke extends React.Component {
     }
     //load file and play blob on both audio & video
     loadFile(file,filename) {
-        this.stop();
         this.emitter.emit('status', 'Reading file...');
         this.emitter.emit('state', {
             error: undefined,
@@ -197,6 +194,7 @@ class Karaoke extends React.Component {
     //get video blob
     async getMusic(yt_url,yt_title) {
         this.setState({showPL:false,loading:'loading'});
+        this.stop();
         var file;
 
         var url = (yt_url==="")?('/api/savedMusic?file='+yt_title):('/api/music?url='+yt_url+'&title='+yt_title);
@@ -339,10 +337,6 @@ class Karaoke extends React.Component {
 	        this.setState({tempo});
             this.ref.current.playbackRate = tempo;
     	}
-    }
-    refresh(e){
-        e.preventDeafault();
-        window.location.reload(true);
     }
 
 

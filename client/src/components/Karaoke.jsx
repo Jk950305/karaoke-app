@@ -367,7 +367,7 @@ class Karaoke extends React.Component {
 	  	return (
 	  		<div className="Karaoke">
                 <div id="header" className="title_header alert alert-info">
-	  		  	    무한코인노래방
+	  		  	    Infinity Coin Karaoke
                 </div>
 
                 <div className="row">

@@ -2261,10 +2261,10 @@
     "minimist" "~1.2.5"
     "node-fzf" "~0.5.1"
 
-"ytdl-core@^4.0.4", "ytdl-core@^4.4.4":
-  "integrity" "sha512-/IFJTM5RjN20q6RVaE/9rv9tKoBtx95lKZCI/pUPDiDzu9fXyuPbkVzEQJmsYEwzi0zdv4d6iJy0gHWz49o6mw=="
-  "resolved" "https://registry.yarnpkg.com/ytdl-core/-/ytdl-core-4.4.4.tgz"
-  "version" "4.4.4"
+"ytdl-core@^4.0.4", "ytdl-core@^4.4.5":
+  "integrity" "sha512-/ugilIF2PskxNfQgkYZ/esvkp+fiB/mOPdIExW/En+1QTbq5VeTVqgf2hETTen0Co2lHMM4eRxPaczDHTmkb7A=="
+  "resolved" "https://registry.npmjs.org/ytdl-core/-/ytdl-core-4.4.5.tgz"
+  "version" "4.4.5"
   dependencies:
     "m3u8stream" "^0.8.3"
     "miniget" "^4.0.0"

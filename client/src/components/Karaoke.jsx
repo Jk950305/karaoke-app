@@ -111,7 +111,19 @@ class Karaoke extends React.Component {
         e.preventDefault();
         if(this.ref.current!=null){
             var current = this.ref.current.currentTime;
-            if(current<this.prev-0.5*this.state.tempo || this.prev+0.5*this.state.tempo<current || current<0.5){
+            /*
+            //auto-replay not allowed
+            if(current>=this.state.duration-0.5){
+                console.log(current);
+                this.ref.current.pause();
+            }
+            */
+
+            //auto-replay allowed
+            if(current==0){
+                this.ref.current.play();
+            }
+            else if(current<this.prev-0.5*this.state.tempo || this.prev+0.5*this.state.tempo<current || current<0.5){
                 const percent = this.ref.current.currentTime/this.state.duration*100;
                 this.audioPlayer.seekPercent(percent);
                 this.play();

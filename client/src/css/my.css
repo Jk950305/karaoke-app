@@ -24,6 +24,9 @@ html{
 
 	margin-bottom: 20px;
 }
+#header:hover{
+	cursor: pointer;
+}
 .row {
 	width: 90%;
 	text-align: center;

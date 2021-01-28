@@ -74,7 +74,7 @@ class Karaoke extends React.Component {
 /* Video&Audio player methods */
     //only gets called from video player
     play() {
-        if (this.state.action !== 'play') {
+        if (this.state.action !== 'play' && this.state.loading!=='loading') {
             this.audioPlayer.play();
             this.setState({action: 'play'});
             this.ref.current.playbackRate = this.state.tempo;
@@ -350,6 +350,10 @@ class Karaoke extends React.Component {
             this.ref.current.playbackRate = tempo;
     	}
     }
+    refreshPage(e){
+        e.preventDefault();
+        window.location.reload();
+    }
 
 
 	render (){
@@ -378,7 +382,7 @@ class Karaoke extends React.Component {
 
 	  	return (
 	  		<div className="Karaoke">
-                <div id="header" className="title_header alert alert-info">
+                <div id="header" className="title_header alert alert-info" onClick={e => this.refreshPage(e)}>
 	  		  	    Infinity Coin Karaoke
                 </div>
 

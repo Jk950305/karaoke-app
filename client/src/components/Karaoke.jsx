@@ -74,7 +74,7 @@ class Karaoke extends React.Component {
 /* Video&Audio player methods */
     //only gets called from video player
     play() {
-        if (this.state.action !== 'play' && this.state.loading!=='loading') {
+        if (this.state.action !== 'play') {
             this.audioPlayer.play();
             this.setState({action: 'play'});
             this.ref.current.playbackRate = this.state.tempo;

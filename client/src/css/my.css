@@ -35,6 +35,10 @@ html{
 	font-size: 0.9em;
 }
 
+.container > .row{
+	margin-bottom:1%;
+}
+
 .controls{
 	width:60%;
 	margin: auto;

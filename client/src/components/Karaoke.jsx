@@ -29,7 +29,8 @@ class Karaoke extends React.Component {
             yt_title: "",
             yt_url: "",
             yt_list: [],
-            loading: ""
+            loading: "",
+            latency: 0.0,
         };
 
         //create an observer
@@ -124,7 +125,8 @@ class Karaoke extends React.Component {
                 this.ref.current.play();
             }
             else if(current<this.prev-0.5*this.state.tempo || this.prev+0.5*this.state.tempo<current || current<0.5){
-                const percent = this.ref.current.currentTime/this.state.duration*100;
+                const percent = ( this.ref.current.currentTime + this.state.latency ) / this.state.duration*100;
+
                 this.audioPlayer.seekPercent(percent);
                 this.play();
             }
@@ -334,26 +336,83 @@ class Karaoke extends React.Component {
     }
     decreaseTempo(e) {
         e.preventDefault();
-    	if(this.state.tempo > 0.5 && this.state.tempo <= 2){
+        if(this.state.tempo > 0.5 && this.state.tempo <= 2){
             const tempo = +(Math.round(this.state.tempo-0.1 + "e+2")  + "e-2");
-	        this.audioPlayer.tempo = tempo;
-	        this.setState({tempo});
+            this.audioPlayer.tempo = tempo;
+            this.setState({tempo});
             this.ref.current.playbackRate = tempo;
-    	}
+        }
     }
     increaseTempo(e) {
         e.preventDefault();
         if(this.state.tempo >= 0.5 && this.state.tempo < 2){
-    		const tempo = +(Math.round(this.state.tempo+0.1 + "e+2")  + "e-2");
-	        this.audioPlayer.tempo = tempo;
-	        this.setState({tempo});
+            const tempo = +(Math.round(this.state.tempo+0.1 + "e+2")  + "e-2");
+            this.audioPlayer.tempo = tempo;
+            this.setState({tempo});
             this.ref.current.playbackRate = tempo;
-    	}
+        }
     }
+
+    //Handle Latency Changes 
+    handleLatency(e){
+        e.preventDefault();
+        var latency = e.target.value;
+        this.setState({latency: latency});
+        var cur = parseFloat(this.ref.current.currentTime)+parseFloat(latency);
+        if(cur>=0&&cur<=this.state.duration){
+            const percent = cur/this.state.duration*100;
+            console.log(percent);
+            this.audioPlayer.seekPercent(percent);
+            this.play();
+        }
+    }
+    decreaseLatency(e) {
+        e.preventDefault();
+        if(this.state.latency > -2.0 && this.state.latency <= 2){
+            const latency = +(Math.round(this.state.latency-0.1 + "e+2")  + "e-2");
+            
+            var cur = parseFloat(this.ref.current.currentTime)+parseFloat(latency);
+            const percent = cur/this.state.duration*100;
+            this.audioPlayer.seekPercent(percent);
+            this.play();
+            this.setState({latency});
+        }
+    }
+    increaseLatency(e) {
+        e.preventDefault();
+        if(this.state.latency >= -2.0 && this.state.latency < 2){
+            const latency = +(Math.round(this.state.latency+0.1 + "e+2")  + "e-2");
+            
+            var cur = parseFloat(this.ref.current.currentTime)+parseFloat(latency);
+            const percent = cur/this.state.duration*100;
+            this.audioPlayer.seekPercent(percent);
+            this.play();
+            this.setState({latency});
+        }
+    }
+
+
     refreshPage(e){
         e.preventDefault();
         window.location.reload();
     }
+    async handleDownload(e){
+        e.preventDefault();
+        console.log(this.state.filename);
+        console.log(this.state.yt_title);
+        //var url = '/api/music?url='+yt_url+'&title='+yt_title;
+
+
+        /*
+        await fetch( url, {
+            method: 'GET',
+            headers: {},
+        }).then(function (response) {
+            console.log(response);
+        }).catch(error => {});
+        */      
+    };
+    
 
 
 	render (){
@@ -464,32 +523,57 @@ class Karaoke extends React.Component {
                         </div>
                     </div>
 
-                    <div className="row controls">
-                            <button type="button" onClick={e => this.decreasePitch(e)} className="btn btns btn-secondary"> - </button>
-                            
-                            <div className="tagg">
+
+                    <div className="container">
+                        <div className="row" style={{display:'none'}}>
+                            <div className="col-sm"></div>
+                            <div className="col-sm">
+                                <button type="button" onClick={e => this.handleDownload(e)} className="btn btn-secondary">download</button>
+                            </div>
+                            <div className="col-sm"></div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm">
+                                <button type="button" onClick={e => this.decreasePitch(e)} className="btn btns btn-secondary"> - </button>
+                            </div>
+                            <div className="col-sm" className="tagg">
                                 <p> 
                                     Pitch ({ (this.state.key<0)?(this.state.key):("+"+this.state.key) } key) 
                                 </p>
                             </div>
-                            
-                            <button type="button" onClick={e => this.increasePitch(e)} className="btn btns btn-secondary"> + </button>
-                    </div>
-
-                    <div className="row controls" style={{marginTop:'0.5em'}}>
-                            <button type="button" onClick={e => this.decreaseTempo(e)} className="btn btns btn-secondary"> - </button>
-                            <div className="tagg">
+                            <div className="col-sm">
+                                <button type="button" onClick={e => this.increasePitch(e)} className="btn btns btn-secondary"> + </button>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm">
+                                <button type="button" onClick={e => this.decreaseTempo(e)} className="btn btns btn-secondary"> - </button>
+                            </div>
+                            <div className="col-sm" className="tagg">
                                 <p> Tempo ({ parseFloat(this.state.tempo).toFixed(1) }x) </p>
                             </div>
-                            
-                            <button type="button" onClick={e => this.increaseTempo(e)} className="btn btns btn-secondary"> + </button>
-
-                    </div>
-                    <div className="row" style={{display: 'none'}}>
-                        <div className="">
-                            <button type="button" onClick={e => this.syncMusic(e)} className="btn btns btn-secondary"> sync </button>
+                            <div className="col-sm">
+                                <button type="button" onClick={e => this.increaseTempo(e)} className="btn btns btn-secondary"> + </button>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm">
+                                <button type="button" onClick={e => this.decreaseLatency(e)} className="btn btns btn-secondary"> - </button>
+                            </div>
+                            <div className="col-sm" className="tagg">
+                                <p>
+                                    Audio Latency ({ (this.state.latency<0)?(this.state.latency):("+"+this.state.latency) } sec) 
+                                </p>
+                            </div>
+                            <div className="col-sm">
+                                <button type="button" onClick={e => this.increaseLatency(e)} className="btn btns btn-secondary"> + </button>
+                            </div>
                         </div>
                     </div>
+
+
+
+
                 </div>
                 <div style={{width:'100%', display: (this.state.loading ==='loading')?('initial'):('none')}}>
                     <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" style={{ width:'50%',marginLeft:'25%', marginRight:'25%'}} alt="loading..." />

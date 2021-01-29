@@ -11,13 +11,85 @@ const {join} = require('path');
 const mv = promisify(fs.rename);
 
 const ytdl = require('ytdl-core');
-const yts = require( 'yt-search' );
-const cors = require('cors');
 
-var ytsr = require('ytsr');
 
-const {google} = require('googleapis');
 
+
+var cheerio = require('cheerio');
+var request = require('request');
+ 
+var url = 'http://www.melon.com/chart/';
+var title = new Array(),
+    artist = new Array(),
+    up_date,
+    up_time;
+var rank = 10;  //10위까지 확인
+ 
+ 
+request(url, function(error, response, html){
+  if (!error) {
+    var $ = cheerio.load(html);
+ 
+   // 곡명 파싱
+    for (var i = 0; i < rank; i++) {
+      $('.ellipsis.rank01 > span > a').each(function(){
+        var title_info = $(this);
+        var title_info_text = title_info.text();
+        title[i] = title_info_text;
+        i++;
+      })
+    }
+ 
+    // 아티스트명 파싱
+    for (var i = 0; i < rank; i++) {
+      $('.checkEllipsis').each(function(){
+        var artist_info = $(this);
+        var artist_info_text = artist_info.text();
+        artist[i] = artist_info_text;
+        i++;
+      })
+    }
+ 
+    // 업데이트 날짜
+    $('.year').each(function(){
+      var date_info = $(this);
+      var date_info_text = date_info.text();
+      up_date = date_info_text;
+    })
+ 
+    // 업데이트 시간
+    $('.hhmm > span').each(function(){
+      var time_info = $(this);
+      var time_info_text = time_info.text();
+      up_time = time_info_text;
+    })
+ 
+    //xxxx년 xx월 xx일 오후/오전 xx시 format
+    var up_date_arr = new Array();
+    var up_date_arr = up_date.split('.');
+    var up_time_arr = new Array();
+    var up_time_arr = up_time.split(':');
+    var newtime;
+ 
+    // 오후 오전 삽입
+    if (up_time_arr[0] >12) {
+      up_time_arr[0] = up_time_arr[0] - 12
+      newtime = "오후 "+up_time_arr[0];
+    } else {
+      newtime = "오전 " +up_time_arr[0];
+    }
+ 
+    // 콘솔창 출력
+    console.log("< 멜론 차트 1 ~ "+rank+"위 >");
+ 
+    // 순위 제목 - 아티스트명
+    for (var i = 1; i < rank+1; i++) {
+      console.log(i+ "위" + " " + title[i-1] + " - " + artist[i-1]);
+    }
+    // 업데이트 시간
+    console.log("("+up_date_arr[0]+"년 "+up_date_arr[1]+"월 "+up_date_arr[2]+"일 "+newtime+"시에 업데이트됨)");
+  }
+});
 
 
 
@@ -39,53 +111,6 @@ async function downloadYT (yt_url,yt_title) {
     writer.on('finish', resolve);
     writer.on('error', reject);
   });
-}
-
-//get a list of search result
-async function getSearchResult (title) {
-	const r = await yts(title);
-	const videos = r.videos.slice( 0, 5 );
-	var result = [];
-	videos.forEach( function ( v ) {
-		if(v.seconds <= 300){
-			var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
-			result.push({title: title, time: v.timestamp, url: v.url, author: v.author.name, thumbnail: v.thumbnail});
-		}
-	} );
-	return result;
-}
-async function getSearchResultYTSR (title) {
-	const videos = await ytsr(title, { limit: 5 });
-	var result = [];
-	for(var i=0;i<videos.items.length;i++){
-		var v = videos.items[i];
-		var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
-		result.push({title: title, time: v.duration, url: v.url, author: v.author.name, thumbnail: v.bestThumbnail.url});
-	
-	}
-	console.log(result);
-	return result;
-}
-async function getSearchResultGoogle (title) {
-	const youtube = google.youtube({
-	  version: 'v3',
-	  auth: 'AIzaSyDLhB4aEMKZVBPi3Siallc3xfAaEpt9E8g'
-	});
-
-	const videos = await youtube.search.list({
-	    part: 'id,snippet',
-	    q: title,
-	});
-
-	var result = [];
-	for(var i=0;i<videos.data.items.length;i++){
-		var v = videos.data.items[i].snippet;
-		var url = "http://www.youtube.com/watch?v="+videos.data.items[i].id.videoId;
-		var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
-		result.push({title: title, time: "", url: url, author: v.channelTitle, thumbnail: v.thumbnails.medium.url});
-	
-	}
-	return result;
 }
 
 
@@ -114,8 +139,6 @@ app.get('/api/files', (req, res) => {
 app.get('/api/youtubeSearch', async function (req, res) {
 	if(req.query.title != null){
 		var title = req.query.title;
-		//var list = await getSearchResult(title);
-		//var list = await getSearchResultYTSR(title);
 		var list = await getSearchResultGoogle(title);
 		res.contentType('application/json');
 		res.send(JSON.stringify(list));
@@ -148,30 +171,32 @@ app.get('/api/music', async function (req, res) {
 	    });
 	    ytdl(url, {quality: '18',} ).pipe(res);
 	}else{
-		res.send('audio file is not specified.',);
+		res.send('source is not specified.',);
 	}
 }).listen(2000);
 
 //download video and pipe the downloaded video to client
-/*
-app.get('/api/music', async function (req, res) {
+
+app.get('/api/download', async function (req, res) {
 	if(req.query.url != null && req.query.title != null){
 		var url = req.query.url;
 		var title = req.query.title;
 		await downloadYT(url,title);
 		await moveYTFile(title);
 		var filePath = path.join(__dirname, '/downloads/'+title+'.mp4');
-		var stat = fs.statSync(filePath);
-		res.writeHead(200, {
-	        'Content-Type': 'audio/mpeg'
-	    });
-	    var readStream = fs.createReadStream(filePath);
-	    readStream.pipe(res);
+	    res.download(filePath);
 	}else{
-		res.send('audio file is not specified.',);
+		res.send('source is not specified.',);
 	}
 }).listen(2002);
-*/
+
+// app.post('/api/world', (req, res) => {
+//   console.log(req.body);
+//   res.send(
+//     `I received your POST request. This is what you sent me: ${req.body.post}`,
+//   );
+// });
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 

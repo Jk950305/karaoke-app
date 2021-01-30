@@ -21,7 +21,6 @@ class Karaoke extends React.Component {
             key: 0,
             simpleFilter: undefined,
             status: [],
-            t: 0,
             tempo: 1.0,
             file: "",
             showPL : false,
@@ -55,7 +54,6 @@ class Karaoke extends React.Component {
 
         //initialize in-app helper variables and functions
         this.inputRef = React.createRef();
-        this.handleSeek = this.handleSeek.bind(this);
         this.handleTitle = this.handleTitle.bind(this);
         this.handleURL = this.handleURL.bind(this);
         this.loadFile = this.loadFile.bind(this);
@@ -107,36 +105,11 @@ class Karaoke extends React.Component {
             this.loadFile(file,filename);
         }
     }
-    //handle seek in video player
-    handleSeek(e) {
-        e.preventDefault();
-        if(this.ref.current!=null){
-            var current = this.ref.current.currentTime;
-            /*
-            //auto-replay not allowed
-            if(current>=this.state.duration-0.5){
-                console.log(current);
-                this.ref.current.pause();
-            }
-            */
-
-            //auto-replay allowed
-            if(current==0){
-                this.ref.current.play();
-            }
-            else if(current<this.prev-0.5*this.state.tempo || this.prev+0.5*this.state.tempo<current || current<0.5){
-                const percent = ( this.ref.current.currentTime + this.state.latency ) / this.state.duration*100;
-
-                this.audioPlayer.seekPercent(percent);
-                this.play();
-            }
-            this.prev = current;
-        }
-    }
+    //sync music with video player
     syncMusic(e){
         e.preventDefault();
-        if(this.ref.current!=null){
-            const percent = this.ref.current.currentTime/this.state.duration*100;
+        if(this.ref.current!=null && !this.ref.current.paused && this.state.loading=='loaded'){
+            const percent = (parseFloat(this.ref.current.currentTime)+parseFloat(this.state.latency))/this.state.duration*100;
             this.audioPlayer.seekPercent(percent);
             this.play();
         }
@@ -296,11 +269,6 @@ class Karaoke extends React.Component {
 
 /* Soundsource related methods */
     //get adjusted pitch value
-    handlePitchChange(e) {
-        const pitch = this.getPitchValue(e.target.value);
-        this.audioPlayer.pitch = pitch;
-        this.setState({pitch});
-    }
     decreasePitch(e){
     	if(this.state.pitch > 0.5 && this.state.pitch <= 2){
     		const key = this.state.key-1;
@@ -328,12 +296,6 @@ class Karaoke extends React.Component {
     }
 
     //Handle Tempo Changes 
-    handleTempoChange(e) {
-        e.preventDefault();
-        const tempo = e.target.value;
-        this.audioPlayer.tempo = tempo;
-        this.setState({tempo});
-    }
     decreaseTempo(e) {
         e.preventDefault();
         if(this.state.tempo > 0.5 && this.state.tempo <= 2){
@@ -354,40 +316,30 @@ class Karaoke extends React.Component {
     }
 
     //Handle Latency Changes 
-    handleLatency(e){
-        e.preventDefault();
-        var latency = e.target.value;
-        this.setState({latency: latency});
-        var cur = parseFloat(this.ref.current.currentTime)+parseFloat(latency);
-        if(cur>=0&&cur<=this.state.duration){
-            const percent = cur/this.state.duration*100;
-            console.log(percent);
-            this.audioPlayer.seekPercent(percent);
-            this.play();
-        }
-    }
     decreaseLatency(e) {
         e.preventDefault();
         if(this.state.latency > -2.0 && this.state.latency <= 2){
             const latency = +(Math.round(this.state.latency-0.1 + "e+2")  + "e-2");
-            
+            this.setState({latency});
             var cur = parseFloat(this.ref.current.currentTime)+parseFloat(latency);
             const percent = cur/this.state.duration*100;
             this.audioPlayer.seekPercent(percent);
-            this.play();
-            this.setState({latency});
+            if(!this.ref.current.paused){
+                this.play();
+            }
         }
     }
     increaseLatency(e) {
         e.preventDefault();
         if(this.state.latency >= -2.0 && this.state.latency < 2){
             const latency = +(Math.round(this.state.latency+0.1 + "e+2")  + "e-2");
-            
+            this.setState({latency});
             var cur = parseFloat(this.ref.current.currentTime)+parseFloat(latency);
             const percent = cur/this.state.duration*100;
             this.audioPlayer.seekPercent(percent);
-            this.play();
-            this.setState({latency});
+            if(!this.ref.current.paused){
+                this.play();
+            }
         }
     }
 
@@ -518,7 +470,7 @@ class Karaoke extends React.Component {
                     <div className="row">
                         <FilenameLabel error={this.state.error} filename={this.state.filename} />
                         <div>
-                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.handleSeek(e)} onPlay={e => this.syncMusic(e)} onPause={this.pause.bind(this)} controlsList="nodownload" disablePictureInPicture autoPlay>
+                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onPlay={e => this.syncMusic(e)} onPause={this.pause.bind(this)} controlsList="nodownload" disablePictureInPicture autoPlay>
                             </video>
                         </div>
                     </div>

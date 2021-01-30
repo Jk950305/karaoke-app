@@ -21,6 +21,7 @@ class Karaoke extends React.Component {
             key: 0,
             simpleFilter: undefined,
             status: [],
+            t: 0,
             tempo: 1.0,
             file: "",
             showPL : false,
@@ -54,6 +55,7 @@ class Karaoke extends React.Component {
 
         //initialize in-app helper variables and functions
         this.inputRef = React.createRef();
+        this.handleSeek = this.handleSeek.bind(this);
         this.handleTitle = this.handleTitle.bind(this);
         this.handleURL = this.handleURL.bind(this);
         this.loadFile = this.loadFile.bind(this);
@@ -105,7 +107,31 @@ class Karaoke extends React.Component {
             this.loadFile(file,filename);
         }
     }
-    //sync music with video player
+    //handle seek in video player
+    handleSeek(e) {
+        e.preventDefault();
+        if(this.ref.current!=null && !this.ref.current.paused && this.state.loading=='loaded'){
+            var current = this.ref.current.currentTime;
+            /*
+            //auto-replay not allowed
+            if(current>=this.state.duration-0.5){
+                console.log(current);
+                this.ref.current.pause();
+            }
+            */
+
+            //auto-replay allowed
+            if(current==0){
+                this.ref.current.play();
+            }
+            else if(current<this.prev-0.5*this.state.tempo || this.prev+0.5*this.state.tempo<current || current<0.5){
+                const percent = ( parseFloat(this.ref.current.currentTime) + parseFloat(this.state.latency) ) / this.state.duration*100;
+                this.audioPlayer.seekPercent(percent);
+                this.play();
+            }
+            this.prev = current;
+        }
+    }
     syncMusic(e){
         e.preventDefault();
         if(this.ref.current!=null && !this.ref.current.paused && this.state.loading=='loaded'){
@@ -470,7 +496,7 @@ class Karaoke extends React.Component {
                     <div className="row">
                         <FilenameLabel error={this.state.error} filename={this.state.filename} />
                         <div>
-                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onPlay={e => this.syncMusic(e)} onPause={this.pause.bind(this)} controlsList="nodownload" disablePictureInPicture autoPlay>
+                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.handleSeek(e)} onPlay={e => this.syncMusic(e)} onPause={this.pause.bind(this)} controlsList="nodownload" disablePictureInPicture autoPlay>
                             </video>
                         </div>
                     </div>

@@ -86,7 +86,6 @@ class AudioPlayer {
 
     //set current source position to requested percentage of the full-length 
     seekPercent(percent) {
-        console.log('seekpercent');
         if (this.simpleFilter !== undefined) {
             this.simpleFilter.sourcePosition = Math.round(
                 percent / 100 * this.duration * this.context.sampleRate

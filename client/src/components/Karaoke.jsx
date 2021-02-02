@@ -216,7 +216,7 @@ class Karaoke extends React.Component {
     async searchOnYoutube(e) {
         e.preventDefault();
         this.setState({showPL: false});
-        var search_title = e.target[0].value;
+        var search_title = e.target[1].value;
         const api_key='AIzaSyC6keBXIih9rgJPf3KyzWrplSBLS_YugJI';
         const youtube = axios.create({
             baseURL:'https://www.googleapis.com/youtube/v3',
@@ -385,6 +385,7 @@ class Karaoke extends React.Component {
 
                 <div className="row">
                     <form onSubmit={e => this.searchOnYoutube(e)} className="youtube-form">
+                        <input type="text" autoFocus="autofocus" style={{display:"none"}} />
                         <input id="yt_title" value={this.state.yt_title} onChange={e => this.handleTitle(e)} type="text" placeholder="Search on Youtube" className="form-control"/>
                         <input type="submit" className="btn btn-danger btn-md" value="Search"/>
                     </form>

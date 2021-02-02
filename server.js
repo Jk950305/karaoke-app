@@ -12,13 +12,14 @@ const mv = promisify(fs.rename);
 
 const ytdl = require('ytdl-core');
 
-
-
-
 var cheerio = require('cheerio');
 var request = require('request');
  
-var url = 'http://www.melon.com/chart/';
+
+
+
+function getMelonTop10() {
+	var url = 'http://www.melon.com/chart/';
 var title = new Array(),
     artist = new Array(),
     up_date,
@@ -90,9 +91,7 @@ request(url, function(error, response, html){
     console.log("("+up_date_arr[0]+"년 "+up_date_arr[1]+"월 "+up_date_arr[2]+"일 "+newtime+"시에 업데이트됨)");
   }
 });
-
-
-
+}
 
 //move file directory
 const moveYTFile = async (yt_title) => {

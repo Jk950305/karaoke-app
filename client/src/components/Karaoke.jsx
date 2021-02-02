@@ -373,7 +373,7 @@ class Karaoke extends React.Component {
                     >
                         <input
                             id="upload-file"
-                            accept="audio"
+                            accept="video"
                             type="file"
                             style={{display: 'none'}}
                             onChange={e => this.handleFileChange(e)}

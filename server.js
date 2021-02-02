@@ -167,7 +167,7 @@ app.get('/api/music', async function (req, res) {
 	if(req.query.url != null && req.query.title != null){
 		var url = req.query.url;
 		res.writeHead(200, {
-	        'Content-Type': 'audio/mpeg'
+	        'Content-Type': 'video/mp4'
 	    });
 	    ytdl(url, {quality: '18',} ).pipe(res);
 	}else{

@@ -5,7 +5,6 @@ import axios from 'axios';
 
 const EventEmitter = require('events').EventEmitter;
 const React = require('react');
-//const AudioPlayer = require('./../lib/AudioPlayer');
 
 class Karaoke extends React.Component {
 
@@ -24,8 +23,6 @@ class Karaoke extends React.Component {
             t: 0,
             tempo: 1.0,
             file: "",
-            showPL : false,
-            savedMusic: [],
             yt_title: "",
             yt_url: "",
             yt_list: [],
@@ -65,7 +62,6 @@ class Karaoke extends React.Component {
     //At the beginning of the app
     componentDidMount() {
         this.stop();
-        this.getMusicList();
     }
     //At the end of the app
     componentWillUnmount() {
@@ -102,7 +98,8 @@ class Karaoke extends React.Component {
         if (e.target.files.length > 0) {
             this.stop();
             this.setState({showPL : false,loading:'loading'});
-            const filename = e.target.value.replace('C:\\fakepath\\', '');
+            var filename = e.target.value.replace('C:\\fakepath\\', '');
+            filename = filename.substring(0,filename.length-4)
             const file = e.target.files[0];
             this.loadFile(file,filename);
         }
@@ -110,31 +107,19 @@ class Karaoke extends React.Component {
     //handle seek in video player
     handleSeek(e) {
         e.preventDefault();
-        if(this.ref.current!=null && !this.ref.current.paused && this.state.loading=='loaded'){
+        if(this.ref.current!=null && !this.ref.current.paused && this.state.loading==='loaded'){
             var current = this.ref.current.currentTime;
-            /*
-            //auto-replay not allowed
-            if(current>=this.state.duration-0.5){
-                console.log(current);
-                this.ref.current.pause();
-            }
-            */
-
-            //auto-replay allowed
-            if(current==0){
-                this.ref.current.play();
-            }
-            else if(current<this.prev-0.5*this.state.tempo || this.prev+0.5*this.state.tempo<current || current<0.5){
+            if(current<this.prev-0.5*this.state.tempo || this.prev+0.5*this.state.tempo<current || current<0.5){
                 const percent = ( parseFloat(this.ref.current.currentTime) + parseFloat(this.state.latency) ) / this.state.duration*100;
                 this.audioPlayer.seekPercent(percent);
                 this.play();
-            }
+            } 
             this.prev = current;
         }
     }
     syncMusic(e){
         e.preventDefault();
-        if(this.ref.current!=null && !this.ref.current.paused && this.state.loading=='loaded'){
+        if(this.ref.current!=null && !this.ref.current.paused && this.state.loading==='loaded'){
             const percent = (parseFloat(this.ref.current.currentTime)+parseFloat(this.state.latency))/this.state.duration*100;
             this.audioPlayer.seekPercent(percent);
             this.play();
@@ -173,16 +158,7 @@ class Karaoke extends React.Component {
 
 
 /* API related methods */
-    //get list of saved music on server and save them in savedMusic 
-    getMusicList(){
-        this.setState({savedMusic:[]});
-        this.getFiles().then(res => {
-            for(var i=0;i<res.music.length;i++){
-                this.setState({ savedMusic : this.state.savedMusic.concat(res.music[i].filename) });
-            }
-        }).catch(err => console.log(err));
 
-    }
     //get music filenames from server
     getFiles = async () => {
         const response = await fetch('/api/files');
@@ -198,19 +174,14 @@ class Karaoke extends React.Component {
         this.setState({yt_list:[],yt_title:""});
         this.getMusic(yt_url,yt_title);
     }
-    //send a saved music filename and receive blob of the music
-    async getSavedMusic(e) {
-        e.preventDefault();
-        var filename = e.target.outerText+".mp4";
-        this.getMusic("",filename);
-    }
+
     //get video blob
     async getMusic(yt_url,yt_title) {
         this.setState({showPL:false,loading:'loading'});
         this.stop();
         var file;
 
-        var url = (yt_url==="")?('/api/savedMusic?file='+yt_title):('/api/music?url='+yt_url+'&title='+yt_title);
+        var url = '/api/music?url='+yt_url+'&title='+yt_title;
 
         await fetch( url, {
             method: 'GET',
@@ -226,14 +197,6 @@ class Karaoke extends React.Component {
 
 /* HTML related methods */
     //toggle the list of saved music
-    showPlaylist(e){
-        e.preventDefault();
-        this.setState({showPL : this.state.savedMusic.length>0});
-    }
-    hidePlaylist(e){
-        e.preventDefault();
-        this.setState({showPL : false});
-    }
 
     //handle input text for title of youtube in search box
     handleTitle(e){
@@ -292,6 +255,12 @@ class Karaoke extends React.Component {
         this.setState({yt_list: result});
     }
 
+    //reload the app
+    refreshPage(e){
+        e.preventDefault();
+        window.location.reload();
+    }
+
 
 /* Soundsource related methods */
     //get adjusted pitch value
@@ -344,7 +313,7 @@ class Karaoke extends React.Component {
     //Handle Latency Changes 
     decreaseLatency(e) {
         e.preventDefault();
-        if(this.state.latency > -2.0 && this.state.latency <= 2){
+        if(this.state.latency > 0 && this.state.latency <= 2){
             const latency = +(Math.round(this.state.latency-0.1 + "e+2")  + "e-2");
             this.setState({latency});
             var cur = parseFloat(this.ref.current.currentTime)+parseFloat(latency);
@@ -357,7 +326,7 @@ class Karaoke extends React.Component {
     }
     increaseLatency(e) {
         e.preventDefault();
-        if(this.state.latency >= -2.0 && this.state.latency < 2){
+        if(this.state.latency >= 0 && this.state.latency < 2){
             const latency = +(Math.round(this.state.latency+0.1 + "e+2")  + "e-2");
             this.setState({latency});
             var cur = parseFloat(this.ref.current.currentTime)+parseFloat(latency);
@@ -368,42 +337,15 @@ class Karaoke extends React.Component {
             }
         }
     }
-
-
-    refreshPage(e){
-        e.preventDefault();
-        window.location.reload();
-    }
-    async handleDownload(e){
-        e.preventDefault();
-        console.log(this.state.filename);
-        console.log(this.state.yt_title);
-        //var url = '/api/music?url='+yt_url+'&title='+yt_title;
-
-
-        /*
-        await fetch( url, {
-            method: 'GET',
-            headers: {},
-        }).then(function (response) {
-            console.log(response);
-        }).catch(error => {});
-        */      
-    };
     
 
 
 	render (){
-        //create a table of saved music
-        var items = [];
-        for(const [key, value] of this.state.savedMusic.entries()){
-            items.push(<tr><td><a href="#header" key={key} onClick={e => this.getSavedMusic(e)}>{value.substring(0,value.indexOf('.'))}</a></td></tr>);
-        }
 
         //create a list of youtube search results
         var yt_list = [];
         for(const [key,value] of this.state.yt_list.entries()){
-            yt_list.push(<tr><td>
+            yt_list.push(<tr key={key}><td>
                 <div className="yt_element" onClick={e => this.getMedia(e,value.title,value.url)}>
                     <div className="yt_thumb">
                         <img src={value.thumbnail} alt="" className="yt_image"/>
@@ -438,15 +380,6 @@ class Karaoke extends React.Component {
                         />
                         Upload from Your Device
                     </label>
-                    <button
-                        className="btn btn-primary btn-md file-btns"
-                        style={{marginLeft: '0.25em',marginBottom: '1em', display: (this.state.savedMusic.length>0)?(''):('none')}}
-                        id="choose-file"
-                        onClick={(this.state.showPL)?(e => this.hidePlaylist(e)):(e => this.showPlaylist(e))}
-                    >
-                        {(!this.state.showPL)?('Show Saved Music'):('Hide Saved Music')}
-                    </button>
-
 
                 </div>
 
@@ -457,26 +390,7 @@ class Karaoke extends React.Component {
                     </form>
                 </div>
 
-                {/*<div className="row">
-                    <form onSubmit={e => this.getVideoFromYoutube(e)} >
-                        <input id="yt_title" value={this.state.yt_url} onChange={e => this.handleURL(e)} type="text" placeholder="Enter Youtube URL" className="form-control"/>
-                        <input type="submit" className="btn btn-danger btn-md" value="Search"/>
-                    </form>
-                </div>*/}
-
                 <ErrorAlert error={this.state.error} />
-
-                
-                 
-                <div className="row" style={{display : (this.state.showPL)?( 'initial' ):( 'none' )}}>
-                    <hr/>
-                        <table className="music_table table table-hover">
-                            <tbody>
-                                {items}
-                            </tbody>
-                        </table>
-                        <p onClick={this.hidePlaylist.bind(this)} style={{float: 'right',fontSize:'10px'}} >close</p>
-                </div>
             
 
                 <div className="yt_table" style={{display: (this.state.yt_list.length>0)?('initial'):('none')}}>
@@ -498,23 +412,18 @@ class Karaoke extends React.Component {
                         <div>
                             <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.handleSeek(e)} onPlay={e => this.syncMusic(e)} onPause={this.pause.bind(this)} controlsList="nodownload" disablePictureInPicture autoPlay>
                             </video>
+                            <a className="btn btn-secondary" href={this.state.file} download={this.state.filename+".mp4"}>download</a>
                         </div>
                     </div>
+                    <br/>
 
 
                     <div className="container">
-                        <div className="row" style={{display:'none'}}>
-                            <div className="col-sm"></div>
-                            <div className="col-sm">
-                                <button type="button" onClick={e => this.handleDownload(e)} className="btn btn-secondary">download</button>
-                            </div>
-                            <div className="col-sm"></div>
-                        </div>
                         <div className="row">
                             <div className="col-sm">
                                 <button type="button" onClick={e => this.decreasePitch(e)} className="btn btns btn-secondary"> - </button>
                             </div>
-                            <div className="col-sm" className="tagg">
+                            <div className="col-sm tagg">
                                 <p> 
                                     Pitch ({ (this.state.key<0)?(this.state.key):("+"+this.state.key) } key) 
                                 </p>
@@ -527,7 +436,7 @@ class Karaoke extends React.Component {
                             <div className="col-sm">
                                 <button type="button" onClick={e => this.decreaseTempo(e)} className="btn btns btn-secondary"> - </button>
                             </div>
-                            <div className="col-sm" className="tagg">
+                            <div className="col-sm tagg">
                                 <p> Tempo ({ parseFloat(this.state.tempo).toFixed(1) }x) </p>
                             </div>
                             <div className="col-sm">
@@ -538,7 +447,7 @@ class Karaoke extends React.Component {
                             <div className="col-sm">
                                 <button type="button" onClick={e => this.decreaseLatency(e)} className="btn btns btn-secondary"> - </button>
                             </div>
-                            <div className="col-sm" className="tagg">
+                            <div className="col-sm tagg">
                                 <p>
                                     Audio Latency ({ (this.state.latency<0)?(this.state.latency):("+"+this.state.latency) } sec) 
                                 </p>

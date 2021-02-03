@@ -1,4 +1,6 @@
 import FilenameLabel from'./FilenameLabel.jsx';
+import Controller from'./Controller.jsx';
+import YoutubeList from'./YoutubeList.jsx';
 import ErrorAlert from'./ErrorAlert.jsx';
 import AudioPlayer from './../lib/AudioPlayer';
 import axios from 'axios';
@@ -17,7 +19,7 @@ class Karaoke extends React.Component {
             error: undefined,
             filename: undefined,
             pitch: 1.0,
-            key: 0,
+            pitch_key: 0,
             simpleFilter: undefined,
             status: [],
             t: 0,
@@ -52,10 +54,17 @@ class Karaoke extends React.Component {
 
         //initialize in-app helper variables and functions
         this.inputRef = React.createRef();
+
         this.handleSeek = this.handleSeek.bind(this);
         this.handleTitle = this.handleTitle.bind(this);
         this.handleURL = this.handleURL.bind(this);
+
+        this.handlePitch = this.handlePitch.bind(this);
+        this.handleTempo = this.handleTempo.bind(this);
+        this.handleLatency = this.handleLatency.bind(this);
+
         this.loadFile = this.loadFile.bind(this);
+        this.getMedia = this.getMedia.bind(this);
     }
 
 /* React Page related methods */
@@ -200,9 +209,11 @@ class Karaoke extends React.Component {
 
     //handle input text for title of youtube in search box
     handleTitle(e){
+        e.preventDefault();
         this.setState({yt_title : e.target.value});
     }
     handleURL(e){
+        e.preventDefault();
         this.setState({yt_url : e.target.value});
     }
     getVideoFromYoutube(e){
@@ -217,7 +228,7 @@ class Karaoke extends React.Component {
         e.preventDefault();
         this.setState({showPL: false});
         var search_title = e.target[1].value;
-        const api_key='AIzaSyC6keBXIih9rgJPf3KyzWrplSBLS_YugJI';
+        const api_key='AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k';
         const youtube = axios.create({
             baseURL:'https://www.googleapis.com/youtube/v3',
             params:
@@ -263,25 +274,22 @@ class Karaoke extends React.Component {
 
 
 /* Soundsource related methods */
+    //handle pitch changes
+    handlePitch(e){
+        e.preventDefault();
+        var btn_id = e.target.id;
+        var pitch_key = this.state.pitch_key;
+        if(btn_id==="decreasePitch"){
+            pitch_key = this.state.pitch_key-1;
+        }else if(btn_id==="increasePitch"){
+            pitch_key = this.state.pitch_key+1;
+        }
+        const pitch = this.getPitchValue(pitch_key);
+        this.audioPlayer.pitch = pitch;
+        this.setState({pitch_key});
+        this.setState({pitch});
+    }
     //get adjusted pitch value
-    decreasePitch(e){
-    	if(this.state.pitch > 0.5 && this.state.pitch <= 2){
-    		const key = this.state.key-1;
-    		const pitch = this.getPitchValue(key);
-	        this.audioPlayer.pitch = pitch;
-	        this.setState({key});
-	        this.setState({pitch});
-    	}
-    }
-    increasePitch(e){
-    	if(this.state.pitch >= 0.5 && this.state.pitch < 2){
-    		const key = this.state.key+1;
-    		const pitch = this.getPitchValue(key);
-	        this.audioPlayer.pitch = pitch;
-	        this.setState({key});
-	        this.setState({pitch});
-    	}
-    }
     getPitchValue(val) {
         var s_var = (val>=0)?(parseInt(val)):(12+parseInt(val));
         //https://en.wikipedia.org/wiki/12_equal_temperament
@@ -290,75 +298,43 @@ class Karaoke extends React.Component {
         return pitch;
     }
 
-    //Handle Tempo Changes 
-    decreaseTempo(e) {
+    //Handle Tempo Changes
+    handleTempo(e){
         e.preventDefault();
-        if(this.state.tempo > 0.5 && this.state.tempo <= 2){
-            const tempo = +(Math.round(this.state.tempo-0.1 + "e+2")  + "e-2");
-            this.audioPlayer.tempo = tempo;
-            this.setState({tempo});
-            this.ref.current.playbackRate = tempo;
+        var btn_id = e.target.id;
+        var val = 0;
+        if(btn_id==="decreaseTempo"){
+            val = -0.1;
+        }else if(btn_id==="increaseTempo"){
+            val = 0.1;
         }
-    }
-    increaseTempo(e) {
-        e.preventDefault();
-        if(this.state.tempo >= 0.5 && this.state.tempo < 2){
-            const tempo = +(Math.round(this.state.tempo+0.1 + "e+2")  + "e-2");
-            this.audioPlayer.tempo = tempo;
-            this.setState({tempo});
-            this.ref.current.playbackRate = tempo;
-        }
+        const tempo = +(Math.round(this.state.tempo+val + "e+2")  + "e-2");
+        this.audioPlayer.tempo = tempo;
+        this.setState({tempo});
+        this.ref.current.playbackRate = tempo;
     }
 
     //Handle Latency Changes 
-    decreaseLatency(e) {
+    handleLatency(e){
         e.preventDefault();
-        if(this.state.latency > 0 && this.state.latency <= 2){
-            const latency = +(Math.round(this.state.latency-0.1 + "e+2")  + "e-2");
-            this.setState({latency});
-            var cur = parseFloat(this.ref.current.currentTime)+parseFloat(latency);
-            const percent = cur/this.state.duration*100;
-            this.audioPlayer.seekPercent(percent);
-            if(!this.ref.current.paused){
-                this.play();
-            }
+        var btn_id = e.target.id;
+        var val = 0;
+        if(btn_id==="decreaseLatency"){
+            val = -0.1;
+        }else if(btn_id==="increaseLatency"){
+            val = 0.1;
         }
+        const latency = +(Math.round(this.state.latency+val + "e+2")  + "e-2");
+        this.setState({latency});
+        var cur = parseFloat(this.ref.current.currentTime)+parseFloat(latency);
+        const percent = cur/this.state.duration*100;
+        this.audioPlayer.seekPercent(percent);
+        if(!this.ref.current.paused){ this.play(); }
+
     }
-    increaseLatency(e) {
-        e.preventDefault();
-        if(this.state.latency >= 0 && this.state.latency < 2){
-            const latency = +(Math.round(this.state.latency+0.1 + "e+2")  + "e-2");
-            this.setState({latency});
-            var cur = parseFloat(this.ref.current.currentTime)+parseFloat(latency);
-            const percent = cur/this.state.duration*100;
-            this.audioPlayer.seekPercent(percent);
-            if(!this.ref.current.paused){
-                this.play();
-            }
-        }
-    }
-    
 
 
 	render (){
-
-        //create a list of youtube search results
-        var yt_list = [];
-        for(const [key,value] of this.state.yt_list.entries()){
-            yt_list.push(<tr key={key}><td>
-                <div className="yt_element" onClick={e => this.getMedia(e,value.title,value.url)}>
-                    <div className="yt_thumb">
-                        <img src={value.thumbnail} alt="" className="yt_image"/>
-                        <p className="yt_time">({value.time})</p>
-                    </div>
-                    <div className="yt_info">
-                        <p className="yt_title">{value.title}</p>
-                        <p className="yt_author">{value.author}</p> 
-                    </div>
-                </div></td></tr>
-            );
-        }
-
 	  	return (
 	  		<div className="Karaoke">
                 <div id="header" className="title_header alert alert-info" onClick={e => this.refreshPage(e)}>
@@ -380,6 +356,7 @@ class Karaoke extends React.Component {
                         />
                         Upload from Your Device
                     </label>
+                    <button className="btn btn-primary btn-md file-btns" style={{marginRight: '0.25em', marginBottom: '1em', display:'none'}}>Show Popular Songs</button>
 
                 </div>
 
@@ -394,16 +371,7 @@ class Karaoke extends React.Component {
                 <ErrorAlert error={this.state.error} />
             
 
-                <div className="yt_table" style={{display: (this.state.yt_list.length>0)?('initial'):('none')}}>
-                    <hr/> 
-                    <div className="row">
-                        <table className=" table table-hover">
-                            <tbody>
-                                    {yt_list}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <YoutubeList yt_list = {this.state.yt_list} getMedia = {this.getMedia}/>
 
 
                 <div style={{display: (this.state.loading ==='loaded')?('initial'):('none')}}>
@@ -411,7 +379,7 @@ class Karaoke extends React.Component {
                     <div className="row">
                         <FilenameLabel error={this.state.error} filename={this.state.filename} />
                         <div>
-                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.handleSeek(e)} onPlay={e => this.syncMusic(e)} onPause={this.pause.bind(this)} controlsList="nodownload" disablePictureInPicture autoPlay>
+                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.handleSeek(e)} onPlay={e => this.syncMusic(e)} onPause={this.pause.bind(this)} controlsList="nodownload" autoPlay>
                             </video>
                             <a className="btn btn-secondary" href={this.state.file} download={this.state.filename+".mp4"}>download</a>
                         </div>
@@ -419,50 +387,16 @@ class Karaoke extends React.Component {
                     <br/>
 
 
-                    <div className="container">
-                        <div className="row">
-                            <div className="col-sm">
-                                <button type="button" onClick={e => this.decreasePitch(e)} className="btn btns btn-secondary"> - </button>
-                            </div>
-                            <div className="col-sm tagg">
-                                <p> 
-                                    Pitch ({ (this.state.key<0)?(this.state.key):("+"+this.state.key) } key) 
-                                </p>
-                            </div>
-                            <div className="col-sm">
-                                <button type="button" onClick={e => this.increasePitch(e)} className="btn btns btn-secondary"> + </button>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm">
-                                <button type="button" onClick={e => this.decreaseTempo(e)} className="btn btns btn-secondary"> - </button>
-                            </div>
-                            <div className="col-sm tagg">
-                                <p> Tempo ({ parseFloat(this.state.tempo).toFixed(1) }x) </p>
-                            </div>
-                            <div className="col-sm">
-                                <button type="button" onClick={e => this.increaseTempo(e)} className="btn btns btn-secondary"> + </button>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm">
-                                <button type="button" onClick={e => this.decreaseLatency(e)} className="btn btns btn-secondary"> - </button>
-                            </div>
-                            <div className="col-sm tagg">
-                                <p>
-                                    Audio Latency ({ (this.state.latency<0)?(this.state.latency):("+"+this.state.latency) } sec) 
-                                </p>
-                            </div>
-                            <div className="col-sm">
-                                <button type="button" onClick={e => this.increaseLatency(e)} className="btn btns btn-secondary"> + </button>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
+                <Controller
+                    pitch_key={this.state.pitch_key}
+                    tempo={this.state.tempo}
+                    latency={this.state.latency}
+                    handlePitch={this.handlePitch}
+                    handleTempo={this.handleTempo}
+                    handleLatency={this.handleLatency}
+                />
                 </div>
+
                 <div style={{width:'100%', display: (this.state.loading ==='loading')?('initial'):('none')}}>
                     <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" style={{ width:'50%',marginLeft:'25%', marginRight:'25%'}} alt="loading..." />
                 </div>

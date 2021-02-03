@@ -238,6 +238,7 @@ class Karaoke extends React.Component {
     async searchOnYoutube(e) {
         e.preventDefault();
         this.setState({showPL: false});
+
         var search_title = e.target[1].value;
         const api_key= this.state.api_key;
         const youtube = axios.create({
@@ -245,11 +246,11 @@ class Karaoke extends React.Component {
             params:
             {
                 part:'id,snippet',
-                maxResults:5,
+                maxResults:10,
                 key: api_key
             }
         });
-        const res = await youtube.get('/search', {params: { q: search_title }});
+        const res = await youtube.get('/search', {params: { q: search_title+" karaoke" }});
         var result = [];
         var tmp = ""
         for(let i=0;i<res.data.items.length;i++){
@@ -262,17 +263,57 @@ class Karaoke extends React.Component {
             params:{ part:'contentDetails', key: api_key }
             });
         const details = await youtube2.get('/videos', {params: {id: tmp }});
+        var count = (res.data.items.length<5)?(res.data.items.length):(5);
 
-        for(let i=0;i<res.data.items.length;i++){
-            var str = (details.data.items[i].contentDetails.duration).replace(/P|T|S/g,'').split('M');
-            var sec = (str[1].length>1)?(str[1]):("0"+str[1]);
-            var duration = str[0]+":"+sec;
-            if(str[0] <= 5){
-                var v = res.data.items[i].snippet;
-                var url = "http://www.youtube.com/watch?v="+res.data.items[i].id.videoId;
-                var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
-                result.push({title: title, time: duration, url: url, author: v.channelTitle, thumbnail: v.thumbnails.medium.url});
+        for(let i=0;i<count;i++){
+            if(details.data.items[i] && res.data.items[i].id.videoId){
+
+                //get hour, min, and sec
+                var str = details.data.items[i].contentDetails.duration;
+                var hour, min, sec;
+                var num = "";
+                for(let j=0;j<str.length;j++){
+                    switch(str[j]){
+                        case 'P': break;
+                        case 'T': break;
+                        case 'H':
+                            hour = "0".repeat(2-num.length)+num;
+                            num = "";
+                            break;
+                        case 'M':
+                            min = "0".repeat(2-num.length)+num;
+                            num = "";
+                            break;
+                        case 'S':
+                            sec = "0".repeat(2-num.length)+num;
+                            num = "";
+                            break;
+                        default:
+                            num += str[j];
+                            break;
+                    }
+                }
+
+                //fill empty fields
+                hour = (hour===undefined)?('00'):(hour);
+                min = (min===undefined)?('00'):(min);
+                sec = (sec===undefined)?('00'):(sec);
+
+                //get duration
+                var duration = (hour==="00")?(min+":"+sec):(hour+":"+min+":"+sec);
+
+                if(hour==="00" && min<="05" && min>="02"){
+                    var v = res.data.items[i].snippet;
+                    var url = "http://www.youtube.com/watch?v="+res.data.items[i].id.videoId;
+                    var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
+                    result.push({title: title, time: duration, url: url, author: v.channelTitle, thumbnail: v.thumbnails.medium.url});
+                }
+            }else{
+                count++;
             }
+        }
+        if(result.length===0){
+            result.push({message: 'No Search Results Found.'});
         }
         this.setState({yt_list: result});
     }
@@ -349,7 +390,7 @@ class Karaoke extends React.Component {
 	  	return (
 	  		<div className="Karaoke">
                 <div id="header" className="title_header alert alert-info" onClick={e => this.refreshPage(e)}>
-	  		  	    Infinity Coin Karaoke
+                    Infinity Coin Karaoke
                 </div>
 
                 <div className="row">

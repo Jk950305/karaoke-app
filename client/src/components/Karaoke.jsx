@@ -30,6 +30,7 @@ class Karaoke extends React.Component {
             yt_list: [],
             loading: "",
             latency: 0.0,
+            api_key: "",
         };
 
         //create an observer
@@ -71,11 +72,21 @@ class Karaoke extends React.Component {
     //At the beginning of the app
     componentDidMount() {
         this.stop();
+        this.getApiKey()
+            .then(res => this.setState({ api_key: res }))
+                .catch(err => console.log(err));
     }
     //At the end of the app
     componentWillUnmount() {
         this.stop();
     }
+
+    getApiKey = async () => {
+        const response = await fetch('/api/api_key');
+        const body = await response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body.api_key;
+    };
 
 /* Video&Audio player methods */
     //only gets called from video player
@@ -228,7 +239,7 @@ class Karaoke extends React.Component {
         e.preventDefault();
         this.setState({showPL: false});
         var search_title = e.target[1].value;
-        const api_key='AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k';
+        const api_key= this.state.api_key;
         const youtube = axios.create({
             baseURL:'https://www.googleapis.com/youtube/v3',
             params:

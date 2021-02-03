@@ -134,6 +134,10 @@ app.get('/api/files', (req, res) => {
 	res.send(JSON.stringify(files));
 });
 
+app.get('/api/api_key', (req, res) => {
+  res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
+});
+
 //get search title and return list of searched video info
 app.get('/api/youtubeSearch', async function (req, res) {
 	if(req.query.title != null){

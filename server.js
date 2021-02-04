@@ -14,83 +14,62 @@ const ytdl = require('ytdl-core');
 
 var cheerio = require('cheerio');
 var request = require('request');
- 
+
+var popular_list;
+var timestamp = new Date();
 
 
+function requestTJChart(url) {
+	var titles = new Array();
+    var artists = new Array();
+    var result = {
+    	top100 : []
+    };
+	return new Promise(function (resolve, reject) {
+	    request(url, async function(error, response, html){
+			if (!error) {
+			    var $ = await cheerio.load(html);
+			    //get titles
+			    var i = 0;
+			    $('#BoardType1 > table > tbody > tr > td:nth-child(3)').each(function(){
+			    	var title_info = $(this);
+			        var title_info_text = title_info.text();
+			        titles[i] = title_info_text;
+			        i++;
+			    });
 
-function getMelonTop10() {
-	var url = 'http://www.melon.com/chart/';
-	var title = new Array(),
-    artist = new Array(),
-    up_date,
-    up_time;
-    var rank = 10;  //10위까지 확인
+			    //get artists
+			    var j=0;
+			    $('#BoardType1 > table > tbody > tr > td:nth-child(4)').each(function(){
+			        var artist_info = $(this);
+			        var artist_info_text = artist_info.text();
+			        artists[j] = artist_info_text;
+			        j++;
+			    });
 
-    request(url, function(error, response, html){
-		if (!error) {
-		    var $ = cheerio.load(html);
-		 
-		   // 곡명 파싱
-		    for (var i = 0; i < rank; i++) {
-		      $('.ellipsis.rank01 > span > a').each(function(){
-		        var title_info = $(this);
-		        var title_info_text = title_info.text();
-		        title[i] = title_info_text;
-		        i++;
-		      })
-		    }
-		 
-		    // 아티스트명 파싱
-		    for (var i = 0; i < rank; i++) {
-		      $('.checkEllipsis').each(function(){
-		        var artist_info = $(this);
-		        var artist_info_text = artist_info.text();
-		        artist[i] = artist_info_text;
-		        i++;
-		      })
-		    }
-		 
-		    // 업데이트 날짜
-		    $('.year').each(function(){
-		      var date_info = $(this);
-		      var date_info_text = date_info.text();
-		      up_date = date_info_text;
-		    })
-		 
-		    // 업데이트 시간
-		    $('.hhmm > span').each(function(){
-		      var time_info = $(this);
-		      var time_info_text = time_info.text();
-		      up_time = time_info_text;
-		    })
-		 
-		    //xxxx년 xx월 xx일 오후/오전 xx시 format
-		    var up_date_arr = new Array();
-		    var up_date_arr = up_date.split('.');
-		    var up_time_arr = new Array();
-		    var up_time_arr = up_time.split(':');
-		    var newtime;
-		 
-		    // 오후 오전 삽입
-		    if (up_time_arr[0] >12) {
-		      up_time_arr[0] = up_time_arr[0] - 12
-		      newtime = "오후 "+up_time_arr[0];
-		    } else {
-		      newtime = "오전 " +up_time_arr[0];
-		    }
-		 
-		    // 콘솔창 출력
-		    console.log("< 멜론 차트 1 ~ "+rank+"위 >");
-		 
-		    // 순위 제목 - 아티스트명
-		    for (var i = 1; i < rank+1; i++) {
-		      console.log(i+ "위" + " " + title[i-1] + " - " + artist[i-1]);
-		    }
-		    // 업데이트 시간
-		    console.log("("+up_date_arr[0]+"년 "+up_date_arr[1]+"월 "+up_date_arr[2]+"일 "+newtime+"시에 업데이트됨)");
-		}
-	});
+			 
+			    //generate list
+			    for (var i = 0; i < titles.length; i++) {
+			    	result.top100.push({"title" : titles[i], "artist":artists[i]});
+			    }
+			    resolve(result);
+			}else{
+				reject(error);
+			}
+		});
+	})
 }
+
+async function getTJTop100(){
+	var url = 'http://www.tjmedia.co.kr/tjsong/song_monthPopular.asp';
+	 await requestTJChart(url);
+}
+
+
+
+
+
+
 
 //move file directory
 const moveYTFile = async (yt_title) => {
@@ -122,7 +101,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/api/files', (req, res) => {
 	var files = {
 	  	music : []
-	  };
+	};
 	var music_files = fs.readdirSync('./downloads/');
 	music_files.forEach(file => {
     	if( !(/^\./.test(file)) ){
@@ -137,15 +116,6 @@ app.get('/api/api_key', (req, res) => {
   res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
 });
 
-//get search title and return list of searched video info
-app.get('/api/youtubeSearch', async function (req, res) {
-	if(req.query.title != null){
-		var title = req.query.title;
-		var list = await getSearchResultGoogle(title);
-		res.contentType('application/json');
-		res.send(JSON.stringify(list));
-	}
-});
 
 
 //send the piped youtube video to client diretly
@@ -175,6 +145,27 @@ app.get('/api/download', async function (req, res) {
 		res.send('source is not specified.',);
 	}
 }).listen(2001);
+
+app.get('/api/TJ', async function (req, res) {
+	var chart;
+	var max_date = new Date(timestamp);
+	max_date.setDate(timestamp.getDate()+1);
+	var cur_date = new Date();
+	if(popular_list && cur_date<max_date){
+		chart = popular_list;
+	}else{
+		var url = 'http://www.tjmedia.co.kr/tjsong/song_monthPopular.asp';
+		chart = await requestTJChart(url);
+		popular_list = chart;
+		timestamp = new Date();
+	}
+	res.contentType('application/json');
+	res.send(JSON.stringify(chart));
+});
+
+app.get('/api/api_key', (req, res) => {
+  res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
+});
 
 // app.post('/api/world', (req, res) => {
 //   console.log(req.body);

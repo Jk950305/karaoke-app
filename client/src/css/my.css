@@ -24,7 +24,7 @@ html{
 
 	margin-bottom: 20px;
 }
-#header:hover{
+#header:hover, .cursor:hover, tr:hover{
 	cursor: pointer;
 }
 .row {

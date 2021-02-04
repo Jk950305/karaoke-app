@@ -1,4 +1,5 @@
 import FilenameLabel from'./FilenameLabel.jsx';
+import PopularList from'./PopularList.jsx';
 import Controller from'./Controller.jsx';
 import YoutubeList from'./YoutubeList.jsx';
 import ErrorAlert from'./ErrorAlert.jsx';
@@ -31,7 +32,10 @@ class Karaoke extends React.Component {
             loading: "",
             latency: 0.0,
             api_key: "",
+            chart: [],
+            chartPage: 0,
         };
+
 
         //create an observer
         this.emitter = new EventEmitter();
@@ -66,6 +70,10 @@ class Karaoke extends React.Component {
 
         this.loadFile = this.loadFile.bind(this);
         this.getMedia = this.getMedia.bind(this);
+
+        this.toggleTJChart = this.toggleTJChart.bind(this);
+        this.findOnYoutube = this.findOnYoutube.bind(this);
+        this.moveChart = this.moveChart.bind(this);
     }
 
 /* React Page related methods */
@@ -74,6 +82,9 @@ class Karaoke extends React.Component {
         this.stop();
         this.getApiKey()
             .then(res => this.setState({ api_key: res }))
+                .catch(err => console.log(err));
+        this.getTJChart()
+            .then(res => this.setState({ chart: res.top100 }))
                 .catch(err => console.log(err));
     }
     //At the end of the app
@@ -115,9 +126,10 @@ class Karaoke extends React.Component {
     //get file inputs from user to be played
     handleFileChange(e) {
         e.preventDefault();
+        this.setState({yt_list:[],yt_title:"",chartPage:0});
         if (e.target.files.length > 0) {
             this.stop();
-            this.setState({showPL : false,loading:'loading'});
+            this.setState({chartPage : 0,loading:'loading'});
             var filename = e.target.value.replace('C:\\fakepath\\', '');
             filename = filename.substring(0,filename.length-4)
             const file = e.target.files[0];
@@ -197,7 +209,7 @@ class Karaoke extends React.Component {
 
     //get video blob
     async getMusic(yt_url,yt_title) {
-        this.setState({showPL:false,loading:'loading'});
+        this.setState({chartPage:0,loading:'loading'});
         this.stop();
         var file;
 
@@ -212,6 +224,13 @@ class Karaoke extends React.Component {
             file = blob;
         }).catch(error => {});
         this.loadFile(file,yt_title);
+    }
+
+    async getTJChart() {
+        const response = await fetch('/api/TJ');
+        const body = response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
     }
 
 
@@ -235,11 +254,21 @@ class Karaoke extends React.Component {
     }
 
     //send title to be searched to server and get short videos 
-    async searchOnYoutube(e) {
+    searchOnYoutube(e) {
         e.preventDefault();
-        this.setState({showPL: false});
-
+        this.setState({chartPage: 0});
         var search_title = e.target[1].value;
+        this.requestYoutubeSearch(search_title);
+    }
+
+    findOnYoutube(e){
+        e.preventDefault();
+        var search_title = e.target.textContent;
+        this.requestYoutubeSearch(search_title);
+        this.setState({chartPage:0});
+    }
+
+    async requestYoutubeSearch(search_title) {
         const api_key= this.state.api_key;
         const youtube = axios.create({
             baseURL:'https://www.googleapis.com/youtube/v3',
@@ -385,8 +414,31 @@ class Karaoke extends React.Component {
 
     }
 
+    toggleTJChart(e){
+        e.preventDefault();
+        var newPage = (this.state.chartPage===0)?(1):(0);
+        if(newPage>0){this.setState({yt_list:[],yt_title:""});}
+        this.setState({chartPage : newPage});
+    }
+
+    moveChart(e){
+        e.preventDefault();
+        var txt = e.target.textContent;
+        switch(txt){
+            case 'next' : 
+                this.setState({chartPage: this.state.chartPage+1});
+                break;
+            case 'prev' : 
+                this.setState({chartPage: this.state.chartPage-1});
+                break;
+            default:
+                break;
+        }
+    }
+
 
 	render (){
+
 	  	return (
 	  		<div className="Karaoke">
                 <div id="header" className="title_header alert alert-info" onClick={e => this.refreshPage(e)}>
@@ -408,7 +460,8 @@ class Karaoke extends React.Component {
                         />
                         Upload from Your Device
                     </label>
-                    <button className="btn btn-primary btn-md file-btns" style={{marginRight: '0.25em', marginBottom: '1em', display:'none'}}>Show Popular Songs</button>
+
+                    <button className="btn btn-primary btn-md file-btns" style={{marginRight: '0.25em', marginBottom: '1em'}} onClick={e => this.toggleTJChart(e)}>{(this.state.chartPage>0)?('Hide'):('Display')} Popular Songs</button>
 
                 </div>
 
@@ -419,6 +472,13 @@ class Karaoke extends React.Component {
                         <input type="submit" className="btn btn-danger btn-md" value="Search"/>
                     </form>
                 </div>
+
+                <PopularList
+                    chart={this.state.chart}
+                    chartPage={this.state.chartPage}
+                    findOnYoutube={this.findOnYoutube}
+                    moveChart={this.moveChart}
+                />
 
                 <ErrorAlert error={this.state.error} />
             
@@ -439,14 +499,14 @@ class Karaoke extends React.Component {
                     <br/>
 
 
-                <Controller
-                    pitch_key={this.state.pitch_key}
-                    tempo={this.state.tempo}
-                    latency={this.state.latency}
-                    handlePitch={this.handlePitch}
-                    handleTempo={this.handleTempo}
-                    handleLatency={this.handleLatency}
-                />
+                    <Controller
+                        pitch_key={this.state.pitch_key}
+                        tempo={this.state.tempo}
+                        latency={this.state.latency}
+                        handlePitch={this.handlePitch}
+                        handleTempo={this.handleTempo}
+                        handleLatency={this.handleLatency}
+                    />
                 </div>
 
                 <div style={{width:'100%', display: (this.state.loading ==='loading')?('initial'):('none')}}>

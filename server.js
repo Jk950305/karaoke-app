@@ -46,8 +46,6 @@ function requestTJChart(url) {
 			        artists[j] = artist_info_text;
 			        j++;
 			    });
-
-			 
 			    //generate list
 			    for (var i = 0; i < titles.length; i++) {
 			    	result.top100.push({"title" : titles[i], "artist":artists[i]});
@@ -146,7 +144,7 @@ app.get('/api/download', async function (req, res) {
 	}
 }).listen(2001);
 
-app.get('/api/TJ', async function (req, res) {
+app.get('/api/TJ_temp', async function (req, res) {
 	var chart;
 	var max_date = new Date(timestamp);
 	max_date.setDate(timestamp.getDate()+1);
@@ -159,6 +157,14 @@ app.get('/api/TJ', async function (req, res) {
 		popular_list = chart;
 		timestamp = new Date();
 	}
+	res.contentType('application/json');
+	res.send(JSON.stringify(chart));
+});
+
+app.get('/api/TJ', async function (req, res) {
+	var chart;
+	var url = 'http://www.tjmedia.co.kr/tjsong/song_monthPopular.asp';
+	chart = await requestTJChart(url);
 	res.contentType('application/json');
 	res.send(JSON.stringify(chart));
 });

@@ -169,12 +169,12 @@ app.get('/api/api_key', (req, res) => {
   res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
 });
 
-app.post('/api/world', (req, res) => {
-  console.log(req.body);
-  res.send(
-    `I received your POST request. This is what you sent me: ${req.body.post}`,
-  );
-});
+// app.post('/api/world', (req, res) => {
+//   console.log(req.body);
+//   res.send(
+//     `I received your POST request. This is what you sent me: ${req.body.post}`,
+//   );
+// });
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

@@ -92,7 +92,7 @@ class Karaoke extends React.Component {
         this.stop();
     }
 
-    getApiKey = async () => {
+    async getApiKey() {
         const response = await fetch('/api/api_key');
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
@@ -192,7 +192,7 @@ class Karaoke extends React.Component {
 /* API related methods */
 
     //get music filenames from server
-    getFiles = async () => {
+    async getFiles() {
         const response = await fetch('/api/files');
         const body = response.json();
         if (response.status !== 200) throw Error(body.message);
@@ -353,6 +353,28 @@ class Karaoke extends React.Component {
         window.location.reload();
     }
 
+    toggleTJChart(e){
+        e.preventDefault();
+        var newPage = (this.state.chartPage===0)?(1):(0);
+        if(newPage>0){this.setState({yt_list:[],yt_title:""});}
+        this.setState({chartPage : newPage});
+    }
+
+    moveChart(e){
+        e.preventDefault();
+        var txt = e.target.textContent;
+        switch(txt){
+            case 'next' : 
+                this.setState({chartPage: this.state.chartPage+1});
+                break;
+            case 'prev' : 
+                this.setState({chartPage: this.state.chartPage-1});
+                break;
+            default:
+                break;
+        }
+    }
+
 
 /* Soundsource related methods */
     //handle pitch changes
@@ -412,28 +434,6 @@ class Karaoke extends React.Component {
         this.audioPlayer.seekPercent(percent);
         if(!this.ref.current.paused){ this.play(); }
 
-    }
-
-    toggleTJChart(e){
-        e.preventDefault();
-        var newPage = (this.state.chartPage===0)?(1):(0);
-        if(newPage>0){this.setState({yt_list:[],yt_title:""});}
-        this.setState({chartPage : newPage});
-    }
-
-    moveChart(e){
-        e.preventDefault();
-        var txt = e.target.textContent;
-        switch(txt){
-            case 'next' : 
-                this.setState({chartPage: this.state.chartPage+1});
-                break;
-            case 'prev' : 
-                this.setState({chartPage: this.state.chartPage-1});
-                break;
-            default:
-                break;
-        }
     }
 
 

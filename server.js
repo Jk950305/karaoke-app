@@ -107,7 +107,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // });
 
 app.get('/api/api_key', (req, res) => {
-  res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
+	//biennale api
+	//AIzaSyDDOuq1TeHbaGMVXGkEG1uIo4EOZDyWvlI
+	
+  //res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
+  res.send({ api_key: 'AIzaSyDDOuq1TeHbaGMVXGkEG1uIo4EOZDyWvlI' });
 });
 
 

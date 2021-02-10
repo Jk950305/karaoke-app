@@ -44,7 +44,7 @@ function requestTJChart(url) {
 			    });
 			    //generate list
 			    for (var i = 0; i < titles.length; i++) {
-			    	result.top100.push({"title" : titles[i], "artist":artists[i]});
+			    	result.top100.push({"title" : titles[i]+" - "+artists[i]});
 			    }
 			    resolve(result);
 			}else{

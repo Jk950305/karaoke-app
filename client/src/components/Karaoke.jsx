@@ -504,6 +504,7 @@ class Karaoke extends React.Component {
                     chartPage={this.state.chartPage}
                     findOnYoutube={this.findOnYoutube}
                     moveChart={this.moveChart}
+                    resetChart={this.resetChart}
                 />
 
                 <ErrorAlert error={this.state.error} />

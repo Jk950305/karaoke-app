@@ -88,6 +88,9 @@ class Karaoke extends React.Component {
         this.getTJChart()
             .then(res => this.setState({ kr_chart: res.top100 }))
                 .catch(err => console.log(err));
+        this.getSingKingPlaylist()
+            .then(res => this.setState({ en_chart: res}))
+                .catch(err => console.log(err));
     }
     //At the end of the app
     componentWillUnmount() {

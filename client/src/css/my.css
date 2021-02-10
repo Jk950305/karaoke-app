@@ -169,8 +169,14 @@ input[type=submit]{
 	width:100%;
 }
 
-.numbering{
+.numbering, .cursor{
 	text-align: center;
+	margin: 0;
+}
+
+th, .cursor{
+	margin: 0;
+	padding:0;
 }
 
 

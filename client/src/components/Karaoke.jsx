@@ -32,7 +32,8 @@ class Karaoke extends React.Component {
             loading: "",
             latency: 0.0,
             api_key: "",
-            chart: [],
+            kr_chart: [],
+            en_chart: [],
             chartPage: 0,
         };
 
@@ -85,7 +86,7 @@ class Karaoke extends React.Component {
             .then(res => this.setState({ api_key: res }))
                 .catch(err => console.log(err));
         this.getTJChart()
-            .then(res => this.setState({ chart: res.top100 }))
+            .then(res => this.setState({ kr_chart: res.top100 }))
                 .catch(err => console.log(err));
     }
     //At the end of the app
@@ -495,7 +496,7 @@ class Karaoke extends React.Component {
                 </div>
 
                 <PopularList
-                    chart={this.state.chart}
+                    chart={this.state.kr_chart}
                     chartPage={this.state.chartPage}
                     findOnYoutube={this.findOnYoutube}
                     moveChart={this.moveChart}

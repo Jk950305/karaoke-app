@@ -169,6 +169,10 @@ input[type=submit]{
 	width:100%;
 }
 
+.numbering{
+	text-align: center;
+}
+
 
 video::-webkit-media-controls-volume-slider {
 display:none;

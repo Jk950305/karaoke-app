@@ -74,6 +74,7 @@ class Karaoke extends React.Component {
         this.toggleTJChart = this.toggleTJChart.bind(this);
         this.findOnYoutube = this.findOnYoutube.bind(this);
         this.moveChart = this.moveChart.bind(this);
+        this.resetChart = this.resetChart.bind(this);
     }
 
 /* React Page related methods */
@@ -435,6 +436,26 @@ class Karaoke extends React.Component {
                 break;
         }
     }
+    resetChart(){
+        this.setState({chartPage: 1});
+    }
+
+    async getSingKingPlaylist(){
+        const res = await axios.get(`https://www.googleapis.com/youtube/v3/playlistItems`, {
+            params: {
+                part: 'id,snippet',
+                maxResults: 50,
+                playlistId: 'PL8D4Iby0Bmm9y57_K3vBvkZiaGjIXD_x5',
+                key: 'AIzaSyDDOuq1TeHbaGMVXGkEG1uIo4EOZDyWvlI'
+            }
+        });
+        var arr = [];
+        for(var i=0;i<res.data.items.length;i++){
+            var title = res.data.items[i].snippet.title;
+            arr.push({"title" : title});
+        }
+        return arr;
+    };
 
 
 	render (){

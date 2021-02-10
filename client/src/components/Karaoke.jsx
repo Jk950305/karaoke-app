@@ -499,7 +499,8 @@ class Karaoke extends React.Component {
                 </div>
 
                 <PopularList
-                    chart={this.state.kr_chart}
+                    en_chart={this.state.en_chart}
+                    kr_chart={this.state.kr_chart}
                     chartPage={this.state.chartPage}
                     findOnYoutube={this.findOnYoutube}
                     moveChart={this.moveChart}

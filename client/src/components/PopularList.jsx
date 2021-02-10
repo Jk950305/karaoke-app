@@ -6,9 +6,9 @@ class PopularList extends React.Component {
         var result = [];
         var start = (this.props.chartPage-1)*10;
         var end = start+10;
-        if(this.props.chartPage>0 && this.props.chartPage<=10){
+        if(this.props.chartPage>0 && this.props.chartPage<=(this.props.en_chart.length/10){
             for(var i=start; i<end; i++){
-                var elem = this.props.chart[i];
+                var elem = this.props.en_chart[i];
                 if(elem){
                     var artist = elem.artist;
                     var title = elem.title;
@@ -26,7 +26,7 @@ class PopularList extends React.Component {
                     prev
                 </p>
                 
-                <p className="cursor" style={{float: 'right', margin:'2%', display: (this.props.chartPage<10 )?( 'block' ):( 'none' )}} onClick={e=>this.props.moveChart(e)}>
+                <p className="cursor" style={{float: 'right', margin:'2%', display: (this.props.chartPage<(this.props.en_chart.length/10) )?( 'block' ):( 'none' )}} onClick={e=>this.props.moveChart(e)}>
                     next
                 </p>
 

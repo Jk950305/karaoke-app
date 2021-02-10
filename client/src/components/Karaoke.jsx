@@ -467,7 +467,7 @@ class Karaoke extends React.Component {
 	  	return (
 	  		<div className="Karaoke">
                 <div id="header" className="title_header alert alert-info" onClick={e => this.refreshPage(e)}>
-                    Infinity Coin Karaoke
+                    Infinite Coin Karaoke
                 </div>
 
                 <div className="row">

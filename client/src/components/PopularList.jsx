@@ -70,7 +70,7 @@ class PopularList extends React.Component {
                 </div>
                     
 
-                <table className=" table table-hover">
+                <table className="table table-hover shrink-fonts">
                     <thead>
                         <tr>
                             <th style={{width:'15%'}}>

@@ -179,6 +179,10 @@ th, .cursor{
 	padding:0;
 }
 
+.shrink-fonts{
+	font-size: 0.9em;
+}
+
 
 video::-webkit-media-controls-volume-slider {
 display:none;

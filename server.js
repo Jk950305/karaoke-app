@@ -59,7 +59,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //get api_key from text file
 app.get('/api/api_key', (req, res) => {
-	const data = fs.readFileSync('./youtube_api_key.txt', {encoding:'utf8', flag:'r'}); 
+	//const data = fs.readFileSync('./youtube_api_key.txt', {encoding:'utf8', flag:'r'});
+	const data = process.env.YOUTUBE_API_KEY;
 	res.send({ api_key: data });
 });
 

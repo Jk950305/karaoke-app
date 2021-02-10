@@ -79,22 +79,26 @@ class Karaoke extends React.Component {
     }
 
 /* React Page related methods */
-    //At the beginning of the app
+    //At the beginning of the app, get api key and playlists
     componentDidMount() {
         this.stop();
         this.getApiKey()
-            .then(res => this.setState({ api_key: res }))
-                .catch(err => console.log(err));
+            .then(res => this.saveApiKey(res))
+                .then(res => this.getSingKingPlaylist(res))
+                    .then(res => this.setState({ en_chart: res}))
+                        .catch(err => console.log(err));
         this.getTJChart()
             .then(res => this.setState({ kr_chart: res.top100 }))
-                .catch(err => console.log(err));
-        this.getSingKingPlaylist()
-            .then(res => this.setState({ en_chart: res}))
                 .catch(err => console.log(err));
     }
     //At the end of the app
     componentWillUnmount() {
         this.stop();
+    }
+
+    saveApiKey(api_key){
+        this.setState({ api_key: api_key });
+        return api_key;
     }
 
     getApiKey = async () => {
@@ -237,6 +241,23 @@ class Karaoke extends React.Component {
         if (response.status !== 200) throw Error(body.message);
         return body;
     }
+
+    async getSingKingPlaylist(api_key){
+        const res = await axios.get(`https://www.googleapis.com/youtube/v3/playlistItems`, {
+            params: {
+                part: 'id,snippet',
+                maxResults: 50,
+                playlistId: 'PL8D4Iby0Bmm9y57_K3vBvkZiaGjIXD_x5',
+                key: api_key
+            }
+        });
+        var arr = [];
+        for(var i=0;i<res.data.items.length;i++){
+            var title = res.data.items[i].snippet.title;
+            arr.push({"title" : title});
+        }
+        return arr;
+    };
 
 
 /* HTML related methods */
@@ -443,23 +464,6 @@ class Karaoke extends React.Component {
     resetChart(){
         this.setState({chartPage: 1});
     }
-
-    async getSingKingPlaylist(){
-        const res = await axios.get(`https://www.googleapis.com/youtube/v3/playlistItems`, {
-            params: {
-                part: 'id,snippet',
-                maxResults: 50,
-                playlistId: 'PL8D4Iby0Bmm9y57_K3vBvkZiaGjIXD_x5',
-                key: 'AIzaSyDDOuq1TeHbaGMVXGkEG1uIo4EOZDyWvlI'
-            }
-        });
-        var arr = [];
-        for(var i=0;i<res.data.items.length;i++){
-            var title = res.data.items[i].snippet.title;
-            arr.push({"title" : title});
-        }
-        return arr;
-    };
 
 
 	render (){

@@ -78,7 +78,7 @@ class PopularList extends React.Component {
                                     {(this.props.chartPage>1)?( 'prev' ):( '' )}
                                 </p>
                             </th>
-                            <th style={{width:'70%', textAlignment:'center'}}><p className="numbering"> {this.props.chartPage} </p></th>
+                            <th style={{width:'70%'}}><p className="numbering"> {this.props.chartPage} </p></th>
                             <th style={{width:'15%'}}>
                                 <p className="cursor" style={{float:'right'}} onClick={e=>this.props.moveChart(e)}>
                                     {(this.props.chartPage<( this.getChart().length/10) )?( 'next' ):( '' )}

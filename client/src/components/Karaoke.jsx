@@ -530,8 +530,7 @@ class Karaoke extends React.Component {
                     <div className="row">
                         <FilenameLabel error={this.state.error} filename={this.state.filename} />
                         <div>
-                            <video 
-                                muted 
+                            <video  
                                 ref={this.ref} 
                                 src={this.state.file} 
                                 id="my-video" 
@@ -542,6 +541,7 @@ class Karaoke extends React.Component {
                                 onPlay={e => this.syncMusic(e)} 
                                 onPause={this.pause.bind(this)} 
                                 controlsList="nodownload" 
+                                muted
                                 autoPlay
                                 playsInline
                             >

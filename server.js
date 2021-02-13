@@ -64,7 +64,6 @@ app.get('/api/api_key', (req, res) => {
 	const data = process.env.YOUTUBE_API_KEY;
 	res.send({ api_key: data });
  });
-
 // app.get('/api/api_key', (req, res) => {
 //   res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
 // });

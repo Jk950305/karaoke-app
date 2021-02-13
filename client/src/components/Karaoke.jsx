@@ -6,6 +6,7 @@ import ErrorAlert from'./ErrorAlert.jsx';
 import AudioPlayer from './../lib/AudioPlayer';
 import axios from 'axios';
 
+
 const EventEmitter = require('events').EventEmitter;
 const React = require('react');
 
@@ -360,7 +361,7 @@ class Karaoke extends React.Component {
                 if(hour==="00" && min<="05" && min>="02"){
                     var v = res.data.items[i].snippet;
                     var url = "http://www.youtube.com/watch?v="+res.data.items[i].id.videoId;
-                    var title = v.title.replaceAll('/','').replaceAll(/\s\s+/g, ' ');
+                    var title = v.title.replace(/\\|\//g,'').replace(/\s\s+/g, ' ');
                     result.push({title: title, time: duration, url: url, author: v.channelTitle, thumbnail: v.thumbnails.medium.url});
                 }
             }else{
@@ -522,7 +523,19 @@ class Karaoke extends React.Component {
                     <div className="row">
                         <FilenameLabel error={this.state.error} filename={this.state.filename} />
                         <div>
-                            <video muted ref={this.ref} src={this.state.file} id="my-video" className="vid" controls onTimeUpdate={e => this.handleSeek(e)} onPlay={e => this.syncMusic(e)} onPause={this.pause.bind(this)} controlsList="nodownload" autoPlay>
+                            <video 
+                                muted 
+                                ref={this.ref} 
+                                src={this.state.file} 
+                                id="my-video" 
+                                className="vid" 
+                                controls 
+                                onTimeUpdate={e => this.handleSeek(e)} 
+                                onPlay={e => this.syncMusic(e)} 
+                                onPause={this.pause.bind(this)} 
+                                controlsList="nodownload" 
+                                autoPlay
+                            >
                             </video>
                             <a className="btn btn-secondary" href={this.state.file} download={this.state.filename+".mp4"}>download</a>
                         </div>

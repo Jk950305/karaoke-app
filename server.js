@@ -13,6 +13,9 @@ const ytdl = require('ytdl-core');
 var cheerio = require('cheerio');
 var request = require('request');
 
+var popular_list;
+var timestamp = new Date();
+
 function requestTJChart(url) {
 	var titles = new Array();
     var artists = new Array();
@@ -59,14 +62,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //get api_key from text file
 
-app.get('/api/api_key', (req, res) => {
-	//const data = fs.readFileSync('./youtube_api_key.txt', {encoding:'utf8', flag:'r'});
-	const data = process.env.YOUTUBE_API_KEY;
-	res.send({ api_key: data });
- });
 // app.get('/api/api_key', (req, res) => {
-//   res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
-// });
+// 	//const data = fs.readFileSync('./youtube_api_key.txt', {encoding:'utf8', flag:'r'});
+// 	const data = process.env.YOUTUBE_API_KEY;
+// 	res.send({ api_key: data });
+//  });
+app.get('/api/api_key', (req, res) => {
+  res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
+});
 
 
 //send the piped youtube video to client diretly
@@ -83,30 +86,31 @@ app.get('/api/music', async function (req, res) {
 }).listen(2000);
 
 
-// app.get('/api/TJ_temp', async function (req, res) {
-// 	var chart;
-// 	var max_date = new Date(timestamp);
-// 	max_date.setDate(timestamp.getDate()+1);
-// 	var cur_date = new Date();
-// 	if(popular_list && cur_date<max_date){
-// 		chart = popular_list;
-// 	}else{
-// 		var url = 'http://www.tjmedia.co.kr/tjsong/song_monthPopular.asp';
-// 		chart = await requestTJChart(url);
-// 		popular_list = chart;
-// 		timestamp = new Date();
-// 	}
-// 	res.contentType('application/json');
-// 	res.send(JSON.stringify(chart));
-// });
-
- app.get('/api/TJ', async function (req, res) {
+app.get('/api/TJ', async function (req, res) {
 	var chart;
-	var url = 'http://www.tjmedia.co.kr/tjsong/song_monthPopular.asp';
-	chart = await requestTJChart(url);
+	var max_date = new Date(timestamp);
+	max_date.setMonth(timestamp.getMonth()+1);
+	var cur_date = new Date();
+	if(popular_list && cur_date<max_date){
+		chart = popular_list;
+	}else{
+		var url = 'http://www.tjmedia.co.kr/tjsong/song_monthPopular.asp';
+		chart = await requestTJChart(url);
+		popular_list = chart;
+		timestamp = new Date();
+	}
+	console.log(cur_date+','+max_date);
 	res.contentType('application/json');
 	res.send(JSON.stringify(chart));
 });
+
+// app.get('/api/TJ', async function (req, res) {
+// 	var chart;
+// 	var url = 'http://www.tjmedia.co.kr/tjsong/song_monthPopular.asp';
+// 	chart = await requestTJChart(url);
+// 	res.contentType('application/json');
+// 	res.send(JSON.stringify(chart));
+// });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 

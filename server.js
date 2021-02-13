@@ -58,11 +58,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //get api_key from text file
+
 app.get('/api/api_key', (req, res) => {
 	//const data = fs.readFileSync('./youtube_api_key.txt', {encoding:'utf8', flag:'r'});
 	const data = process.env.YOUTUBE_API_KEY;
 	res.send({ api_key: data });
-});
+ });
+
+// app.get('/api/api_key', (req, res) => {
+//   res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
+// });
 
 
 //send the piped youtube video to client diretly
@@ -102,10 +107,6 @@ app.get('/api/music', async function (req, res) {
 	chart = await requestTJChart(url);
 	res.contentType('application/json');
 	res.send(JSON.stringify(chart));
-});
-
-app.get('/api/api_key', (req, res) => {
-  res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

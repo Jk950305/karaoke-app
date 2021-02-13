@@ -185,9 +185,13 @@ th, .cursor{
 
 
 video::-webkit-media-controls-volume-slider {
-display:none;
+display:none  !important;
 }
 
 video::-webkit-media-controls-mute-button {
-display:none;
+display:none !important;
+}
+
+video::-webkit-media-controls-fullscreen-volume-slider {
+display:none !important;
 }

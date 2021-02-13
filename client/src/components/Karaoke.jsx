@@ -150,6 +150,7 @@ class Karaoke extends React.Component {
     handleSeek(e) {
         e.preventDefault();
         if(this.ref.current!=null && !this.ref.current.paused && this.state.loading==='loaded'){
+
             var current = this.ref.current.currentTime;
             if(current<this.prev-0.5*this.state.tempo || this.prev+0.5*this.state.tempo<current || current<0.5){
                 const percent = ( parseFloat(this.ref.current.currentTime) + parseFloat(this.state.latency) ) / this.state.duration*100;
@@ -157,6 +158,12 @@ class Karaoke extends React.Component {
                 this.play();
             } 
             this.prev = current;
+        }
+    }
+    handleVolume(e){
+        e.preventDefault();
+        if(this.ref.current!=null){
+            this.ref.current.volume = 0.0;
         }
     }
     syncMusic(e){
@@ -531,6 +538,7 @@ class Karaoke extends React.Component {
                                 className="vid" 
                                 controls 
                                 onTimeUpdate={e => this.handleSeek(e)} 
+                                onVolumeChange={e => this.handleVolume(e)}
                                 onPlay={e => this.syncMusic(e)} 
                                 onPause={this.pause.bind(this)} 
                                 controlsList="nodownload" 

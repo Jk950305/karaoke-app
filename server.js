@@ -99,7 +99,6 @@ app.get('/api/TJ', async function (req, res) {
 		popular_list = chart;
 		timestamp = new Date();
 	}
-	console.log(cur_date+','+max_date);
 	res.contentType('application/json');
 	res.send(JSON.stringify(chart));
 });

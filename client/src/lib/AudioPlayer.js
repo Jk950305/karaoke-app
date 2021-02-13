@@ -5,6 +5,10 @@ const BUFFER_SIZE = 4096;
 class AudioPlayer {
     constructor({emitter, pitch, tempo}) {
         this.emitter = emitter;
+        var AudioContext = window.AudioContext // Default
+            || window.webkitAudioContext // Safari and old versions of Chrome
+            || false; 
+
         this.context = new AudioContext();
         this.scriptProcessor = this.context.createScriptProcessor(BUFFER_SIZE, 2, 2);
         this.scriptProcessor.onaudioprocess = e => {
@@ -47,7 +51,16 @@ class AudioPlayer {
 
     //decode audio data and set buffer
     decodeAudioData(data) {
-        return this.context.decodeAudioData(data);
+        var context = this.context;
+        return new Promise(function (resolve, reject) {
+            context.decodeAudioData(
+                data, 
+                (buffer) => {
+                    resolve(buffer);
+                }, 
+                (e) => { reject(e); }
+            );
+        });
     }
 
     //create a buffer source from given data and send info to observer
@@ -91,6 +104,7 @@ class AudioPlayer {
                 percent / 100 * this.duration * this.context.sampleRate
             );
         }
+        this.context.resume();
     }
 }
 

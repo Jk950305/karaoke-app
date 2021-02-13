@@ -543,6 +543,7 @@ class Karaoke extends React.Component {
                                 onPause={this.pause.bind(this)} 
                                 controlsList="nodownload" 
                                 autoPlay
+                                playsInline
                             >
                             </video>
                             <a className="btn btn-secondary" href={this.state.file} download={this.state.filename+".mp4"}>download</a>

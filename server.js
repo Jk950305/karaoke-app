@@ -21,6 +21,7 @@ var tj_list;
 var singking_list;
 var timestamp = new Date();
 
+//get TJ Karaoke playlist chart
 function requestTJChart(url) {
 	var titles = new Array();
     var artists = new Array();
@@ -60,6 +61,7 @@ function requestTJChart(url) {
 	})
 }
 
+//get Sinking youtube playlist
 function requestSingKingChart(){
 	return new Promise(function(resolve, reject) {
 		google.youtube('v3').playlistItems.list({
@@ -68,10 +70,6 @@ function requestSingKingChart(){
 			playlistId: 'PL8D4Iby0Bmm9y57_K3vBvkZiaGjIXD_x5',
 			maxResults: 50,
 		}).then((res) => {
-			// const {data} = response;
-			// data.items.forEach((item) => {
-			// 	console.log(item);
-			// });
 			var arr = [];
 		    for(var i=0;i<res.data.items.length;i++){
 		        var title = res.data.items[i].snippet.title;
@@ -89,16 +87,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //get api_key
-// AIzaSyDDOuq1TeHbaGMVXGkEG1uIo4EOZDyWvlI
-// AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k
-// app.get('/api/api_key', (req, res) => {
-// 	//const data = fs.readFileSync('./youtube_api_key.txt', {encoding:'utf8', flag:'r'});
-// 	const data = process.env.YOUTUBE_API_KEY;
-// 	res.send({ api_key: data });
-//  });
 app.get('/api/api_key', (req, res) => {
-  res.send({ api_key: 'AIzaSyDDOuq1TeHbaGMVXGkEG1uIo4EOZDyWvlI' });
-});
+	const data = process.env.YOUTUBE_API_KEY;
+	res.send({ api_key: data });
+ });
 
 
 //send the piped youtube video to client diretly

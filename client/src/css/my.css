@@ -197,6 +197,9 @@ th, .cursor{
 	#ios_tips{
 		display: block;
 	}
+	#tip_message{
+		display: none;
+	}
 	input[type='text'],
 	input[type='number'],
 	textarea {

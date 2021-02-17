@@ -577,7 +577,7 @@ class Karaoke extends React.Component {
                                     style={{margin:'0'}}
                                 >
                                 </audio>
-                                <div z-index='10' style={{width:'100px', margin:'0', backgroundColor:'red'}}>
+                                <div id="tip_message" z-index='10' style={{width:'100px', margin:'0', backgroundColor:'red'}}>
                                     <p style={{fontSize:'0.8em', color:'white'}}>please click this button to play audio.</p>
                                 </div>
 
@@ -607,7 +607,7 @@ class Karaoke extends React.Component {
                     <p>* iOS users: please keep the video MUTED.</p>
                     <div style={{display:'inline'}}>
                         <p>* iOS users: please click
-                        <img src="/playbtn.png" style={{ width:'30px', margin:'3px'}} alt="playbtn" />
+                        <img src="/playbtn.png" style={{ width:'30px', marginLeft:'3px', marginRight:'3px'}} alt="playbtn" />
                         to play audio.</p>
                     </div>
                     

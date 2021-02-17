@@ -13,7 +13,12 @@ const ytdl = require('ytdl-core');
 var cheerio = require('cheerio');
 var request = require('request');
 
-var popular_list;
+const {google} = require('googleapis');
+
+
+
+var tj_list;
+var singking_list;
 var timestamp = new Date();
 
 function requestTJChart(url) {
@@ -55,20 +60,44 @@ function requestTJChart(url) {
 	})
 }
 
+function requestSingKingChart(){
+	return new Promise(function(resolve, reject) {
+		google.youtube('v3').playlistItems.list({
+			key: 'AIzaSyDDOuq1TeHbaGMVXGkEG1uIo4EOZDyWvlI',
+			part: 'id,snippet',
+			playlistId: 'PL8D4Iby0Bmm9y57_K3vBvkZiaGjIXD_x5',
+			maxResults: 50,
+		}).then((res) => {
+			// const {data} = response;
+			// data.items.forEach((item) => {
+			// 	console.log(item);
+			// });
+			var arr = [];
+		    for(var i=0;i<res.data.items.length;i++){
+		        var title = res.data.items[i].snippet.title;
+		        title = title.replace(' (Karaoke Version)','')
+		        arr.push({"title" : title});
+		    }
+		    resolve(arr);
+		}).catch((err) => reject(err));
+	})
+}
+
 app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//get api_key from text file
-
+//get api_key
+// AIzaSyDDOuq1TeHbaGMVXGkEG1uIo4EOZDyWvlI
+// AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k
 // app.get('/api/api_key', (req, res) => {
 // 	//const data = fs.readFileSync('./youtube_api_key.txt', {encoding:'utf8', flag:'r'});
 // 	const data = process.env.YOUTUBE_API_KEY;
 // 	res.send({ api_key: data });
 //  });
 app.get('/api/api_key', (req, res) => {
-  res.send({ api_key: 'AIzaSyDFKwmhFGxp0zBK3ddDmFOX9N65G_3F23k' });
+  res.send({ api_key: 'AIzaSyDDOuq1TeHbaGMVXGkEG1uIo4EOZDyWvlI' });
 });
 
 
@@ -85,31 +114,44 @@ app.get('/api/music', async function (req, res) {
 	}
 }).listen(2000);
 
-
 app.get('/api/TJ', async function (req, res) {
 	var chart;
 	var max_date = new Date(timestamp);
 	max_date.setMonth(timestamp.getMonth()+1);
+	max_date.setDate(1);
+	max_date.setHours(0, 0, 0, 0);
+
 	var cur_date = new Date();
-	if(popular_list && cur_date<max_date){
-		chart = popular_list;
+	if(tj_list && cur_date<max_date){
+		chart = tj_list;
 	}else{
 		var url = 'http://www.tjmedia.co.kr/tjsong/song_monthPopular.asp';
 		chart = await requestTJChart(url);
-		popular_list = chart;
+		tj_list = chart;
 		timestamp = new Date();
 	}
 	res.contentType('application/json');
 	res.send(JSON.stringify(chart));
 });
 
-// app.get('/api/TJ', async function (req, res) {
-// 	var chart;
-// 	var url = 'http://www.tjmedia.co.kr/tjsong/song_monthPopular.asp';
-// 	chart = await requestTJChart(url);
-// 	res.contentType('application/json');
-// 	res.send(JSON.stringify(chart));
-// });
+app.get('/api/SingKing', async function (req, res) {
+	var chart;
+	var max_date = new Date(timestamp);
+	max_date.setMonth(timestamp.getMonth()+1);
+	max_date.setDate(1);
+	max_date.setHours(0, 0, 0, 0);
+
+	var cur_date = new Date();
+	if(singking_list && cur_date<max_date){
+		chart = singking_list;
+	}else{
+		chart = await requestSingKingChart();
+		singking_list = chart;
+		timestamp = new Date();
+	}
+	res.contentType('application/json');
+	res.send(JSON.stringify(chart));
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 

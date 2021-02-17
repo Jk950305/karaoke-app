@@ -15,6 +15,7 @@ class Karaoke extends React.Component {
 	constructor(props) {
         super(props);
         this.ref = React.createRef();
+        this.sub = React.createRef();
         this.state = {
             action: 'stop',
             duration: undefined,
@@ -36,6 +37,8 @@ class Karaoke extends React.Component {
             kr_chart: [],
             en_chart: [],
             chartPage: 0,
+            silence: "",
+            ios_click: false,
         };
 
 
@@ -85,11 +88,15 @@ class Karaoke extends React.Component {
         this.stop();
         this.getApiKey()
             .then(res => this.saveApiKey(res))
-                .then(res => this.getSingKingPlaylist(res))
-                    .then(res => this.setState({ en_chart: res}))
-                        .catch(err => console.log(err));
+                .catch(err => console.log(err));
         this.getTJChart()
             .then(res => this.setState({ kr_chart: res.top100 }))
+                .catch(err => console.log(err));
+        this.getSingKingPlaylist()
+            .then(res => this.setState({ en_chart: res}))
+                .catch(err => console.log(err));
+        this.getSilence()
+            .then(res => this.setState({ silence: res}))
                 .catch(err => console.log(err));
     }
     //At the end of the app
@@ -116,6 +123,8 @@ class Karaoke extends React.Component {
             this.audioPlayer.play();
             this.setState({action: 'play'});
             this.ref.current.playbackRate = this.state.tempo;
+            this.sub.current.playbackRate = this.state.tempo;
+            // this.sub.current.play();
         }
     }
     //called iff video player is paused
@@ -123,6 +132,7 @@ class Karaoke extends React.Component {
         if (this.state.action === 'play') {
             this.audioPlayer.pause();
             this.setState({action: 'pause'});
+            this.sub.current.pause();
         }
     }
     //gets called when video player onStop()
@@ -132,6 +142,8 @@ class Karaoke extends React.Component {
         this.setState({action: 'stop', t: 0});
         this.ref.current.currentTime = 0;
         this.ref.current.pause();
+        this.sub.current.currentTime = 0;
+        this.sub.current.pause();
     }
     //get file inputs from user to be played
     handleFileChange(e) {
@@ -149,6 +161,7 @@ class Karaoke extends React.Component {
     //handle seek in video player
     handleSeek(e) {
         e.preventDefault();
+        this.handleVolume(e);
         if(this.ref.current!=null && !this.ref.current.paused && this.state.loading==='loaded'){
 
             var current = this.ref.current.currentTime;
@@ -243,6 +256,17 @@ class Karaoke extends React.Component {
         this.loadFile(file,yt_title);
     }
 
+    async getSilence() {
+        const response = await fetch( '/silence', {
+            method: 'GET',
+            headers: {},
+        });
+        var binaryData = [];
+        binaryData.push(response.blob());
+        var fileURL = URL.createObjectURL(new Blob(binaryData, {type: "video/mp4"}));
+        return fileURL;
+    }
+
     async getTJChart() {
         const response = await fetch('/api/TJ');
         const body = response.json();
@@ -250,21 +274,11 @@ class Karaoke extends React.Component {
         return body;
     }
 
-    async getSingKingPlaylist(api_key){
-        const res = await axios.get(`https://www.googleapis.com/youtube/v3/playlistItems`, {
-            params: {
-                part: 'id,snippet',
-                maxResults: 50,
-                playlistId: 'PL8D4Iby0Bmm9y57_K3vBvkZiaGjIXD_x5',
-                key: api_key
-            }
-        });
-        var arr = [];
-        for(var i=0;i<res.data.items.length;i++){
-            var title = res.data.items[i].snippet.title;
-            arr.push({"title" : title});
-        }
-        return arr;
+    async getSingKingPlaylist(){
+        const response = await fetch('/api/SingKing');
+        const body = response.json();
+        if (response.status !== 200) throw Error(body.message);
+        return body;
     };
 
 
@@ -473,6 +487,11 @@ class Karaoke extends React.Component {
         this.setState({chartPage: 1});
     }
 
+    handleSub(e){
+        e.preventDefault();
+        this.setState({ios_click : true});
+    }
+
 
 	render (){
 
@@ -530,22 +549,39 @@ class Karaoke extends React.Component {
                     <div className="row">
                         <FilenameLabel error={this.state.error} filename={this.state.filename} />
                         <div>
-                            <video  
+                            <video
                                 ref={this.ref} 
                                 src={this.state.file} 
                                 id="my-video" 
                                 className="vid" 
-                                controls 
                                 onTimeUpdate={e => this.handleSeek(e)} 
                                 onVolumeChange={e => this.handleVolume(e)}
                                 onPlay={e => this.syncMusic(e)} 
                                 onPause={this.pause.bind(this)} 
                                 controlsList="nodownload" 
+                                playsInline
                                 muted
                                 autoPlay
-                                playsInline
+                                controls
+
                             >
                             </video>
+                            <div id="hidden_media" style={{display: (this.state.ios_click)?('none'):('block')}}>
+                                <audio
+                                    ref={this.sub}
+                                    className="vid" 
+                                    src="/silence.mp3"
+                                    controls
+                                    playsInline
+                                    onClick={e=>this.handleSub(e)}
+                                    style={{margin:'0'}}
+                                >
+                                </audio>
+                                <div z-index='10' style={{width:'100px', margin:'0', backgroundColor:'red'}}>
+                                    <p style={{fontSize:'0.8em', color:'white'}}>please click this button to play audio.</p>
+                                </div>
+
+                            </div>
                             <a className="btn btn-secondary" href={this.state.file} download={this.state.filename+".mp4"}>download</a>
                         </div>
                     </div>
@@ -564,6 +600,17 @@ class Karaoke extends React.Component {
 
                 <div style={{width:'100%', display: (this.state.loading ==='loading')?('initial'):('none')}}>
                     <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" style={{ width:'50%',marginLeft:'25%', marginRight:'25%'}} alt="loading..." />
+                </div>
+
+                <div className="row" id="ios_tips">
+                    <hr/>
+                    <p>* iOS users: please keep the video MUTED.</p>
+                    <div style={{display:'inline'}}>
+                        <p>* iOS users: please click
+                        <img src="/playbtn.png" style={{ width:'30px', margin:'3px'}} alt="playbtn" />
+                        to play audio.</p>
+                    </div>
+                    
                 </div>
 		    </div>
 

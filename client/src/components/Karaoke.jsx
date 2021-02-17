@@ -517,7 +517,7 @@ class Karaoke extends React.Component {
                         Upload from Your Device
                     </label>
 
-                    <button className="btn btn-primary btn-md file-btns" style={{marginRight: '0.25em', marginBottom: '1em'}} onClick={e => this.toggleTJChart(e)}>{(this.state.chartPage>0)?('Hide'):('Display')} Popular Songs</button>
+                    <button className="btn btn-primary btn-md file-btns" style={{marginRight: '0.25em', marginBottom: '1em'}} onClick={e => this.toggleTJChart(e)}>{(this.state.chartPage>0)?('Hide'):('Show')} Popular Songs</button>
 
                 </div>
 

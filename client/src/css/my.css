@@ -197,6 +197,15 @@ th, .cursor{
 	#ios_tips{
 		display: block;
 	}
+	input[type='text'],
+	input[type='number'],
+	textarea {
+	  font-size: 16px;
+	}
+
+	form input {
+		font-size: 16px!important;
+	}
 }
 
 @supports not (-webkit-touch-callout: none) {
@@ -208,7 +217,6 @@ th, .cursor{
 		display: none;
 	}
 }
-
 
 video::-webkit-media-controls-volume-slider {
 display:none  !important;

@@ -37,7 +37,6 @@ class Karaoke extends React.Component {
             kr_chart: [],
             en_chart: [],
             chartPage: 0,
-            silence: "",
             ios_click: false,
         };
 
@@ -94,9 +93,6 @@ class Karaoke extends React.Component {
                 .catch(err => console.log(err));
         this.getSingKingPlaylist()
             .then(res => this.setState({ en_chart: res}))
-                .catch(err => console.log(err));
-        this.getSilence()
-            .then(res => this.setState({ silence: res}))
                 .catch(err => console.log(err));
     }
     //At the end of the app
@@ -254,17 +250,6 @@ class Karaoke extends React.Component {
             file = blob;
         }).catch(error => {});
         this.loadFile(file,yt_title);
-    }
-
-    async getSilence() {
-        const response = await fetch( '/silence', {
-            method: 'GET',
-            headers: {},
-        });
-        var binaryData = [];
-        binaryData.push(response.blob());
-        var fileURL = URL.createObjectURL(new Blob(binaryData, {type: "video/mp4"}));
-        return fileURL;
     }
 
     async getTJChart() {
@@ -566,7 +551,7 @@ class Karaoke extends React.Component {
 
                             >
                             </video>
-                            <div id="hidden_media" style={{display: (this.state.ios_click)?('none'):('block')}}>
+                            <div id="hidden_media" className="tip_message" style={{display: (this.state.ios_click)?('none'):('block')}}>
                                 <audio
                                     ref={this.sub}
                                     className="vid" 
@@ -577,7 +562,7 @@ class Karaoke extends React.Component {
                                     style={{margin:'0'}}
                                 >
                                 </audio>
-                                <div id="tip_message" z-index='10' style={{width:'100px', margin:'0', backgroundColor:'red'}}>
+                                <div className="tip_message" z-index='10' style={{width:'100px', margin:'0', backgroundColor:'red'}}>
                                     <p style={{fontSize:'0.8em', color:'white'}}>please click this button to play audio.</p>
                                 </div>
 
@@ -606,7 +591,7 @@ class Karaoke extends React.Component {
                     <hr/>
                     <p>* iOS users: please keep the video MUTED.</p>
                     <div style={{display:'inline'}}>
-                        <p>* iOS users: please click
+                        <p className="tip_message">* iOS users: please click
                         <img src="/playbtn.png" style={{ width:'30px', marginLeft:'3px', marginRight:'3px'}} alt="playbtn" />
                         to play audio.</p>
                     </div>

@@ -191,14 +191,11 @@ th, .cursor{
 		clear: both;
 		display: block;
 	}
-	#hidden_media > div {
-		margin-top: 100px;
-	}
 	#ios_tips{
 		display: block;
 	}
-	#tip_message{
-		display: none;
+	.tip_message{
+		display: none !important;
 	}
 	input[type='text'],
 	input[type='number'],

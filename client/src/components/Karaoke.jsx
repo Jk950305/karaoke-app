@@ -515,8 +515,6 @@ class Karaoke extends React.Component {
                 <div id="header" className="title_header alert alert-info" onClick={e => this.refreshPage(e)}>
                     Infinite Coin Karaoke
                 </div>
-                <br/>
-
                 <div className="row">
                     <label
                         className="btn btn-primary btn-md file-btns"

@@ -5,8 +5,8 @@ class Playlist extends React.Component {
     getPlaylist(list){
         var res = [];
         for(let i=0; i<list.length; i++){
-            res.push(<tr key={i}><td style={{clear:'both'}}>
-                        <p style={{width: '5%', float:'left'}}>
+            res.push(<tr key={i}><td style={{clear:'both', padding:'1%'}}>
+                        <p style={{width: '5%', float:'left', margin:'0'}}>
                             {i+1}
                         </p>
                         <div style={{width:'90%', float:'left'}}>

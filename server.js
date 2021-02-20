@@ -14,9 +14,7 @@ var cheerio = require('cheerio');
 var request = require('request');
 
 const {google} = require('googleapis');
-//const api_key = process.env.YOUTUBE_API_KEY;
-//const api_key = 'AIzaSyDDOuq1TeHbaGMVXGkEG1uIo4EOZDyWvlI';
-const api_key = 'AIzaSyDnpD8-ymvlPIoJ-mLaZDWsnO_tRuq6Ix4';
+const api_key = process.env.API_KEY_2;
 
 
 
@@ -91,9 +89,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/api/api_key', (req, res) => {
 	res.send({ api_key: api_key });
  });
-// app.get('/api/api_key', (req, res) => {
-//   res.send({ api_key: '' });
-// });
 
 
 //send the piped youtube video to client diretly

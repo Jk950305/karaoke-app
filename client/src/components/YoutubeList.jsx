@@ -9,7 +9,7 @@ class YoutubeList extends React.Component {
                 res.push(<tr key="-1"><td><p>{value.message}</p></td></tr>);
             }else{
                 res.push(<tr key={key}><td>
-                    <div className="yt_element" onClick={e => this.props.getMedia(e,value.title,value.url)}>
+                    <div className="yt_element">
                         <div className="yt_thumb">
                             <img src={value.thumbnail} alt="" className="yt_image"/>
                             <p className="yt_time">({value.time})</p>
@@ -17,6 +17,22 @@ class YoutubeList extends React.Component {
                         <div className="yt_info">
                             <p className="yt_title">{value.title}</p>
                             <p className="yt_author">{value.author}</p> 
+                        </div>
+                        <div className="yt_reserve">
+                            <button 
+                                className="btn btn-danger btn-sm"
+                                onClick={e => this.props.getMedia(e,value.title,value.url)}
+                            >
+                                play
+                            </button>
+
+                            <button 
+                                className="btn btn-primary btn-sm"
+                                style={{'display' : (this.props.action!=='stop'||this.props.loading==='loading')?('block'):('none')}}
+                                onClick={e => this.props.enqueueMusic(e,value.title,value.url)}
+                            >
+                                rsrv
+                            </button>
                         </div>
                     </div></td></tr>
                 )
@@ -29,11 +45,20 @@ class YoutubeList extends React.Component {
         return (
             <div 
                 className="yt_table" 
-                style={{display: (this.props.yt_list.length>0)?('initial'):('none')}}
+                style={{
+                    display: (this.props.yt_list.length>0)?('initial'):('none'),
+                    position: 'absolute',
+                    left: '0',
+                    zIndex: '100',
+                    background: 'white',
+                    opacity: '0.9',
+                    width: '100%'
+
+                }}
             >
             <hr/> 
                 <div className="row">
-                    <table className=" table table-hover">
+                    <table className="table">
                         <tbody>
                             {this.getYoutubeList()}
                         </tbody>

@@ -39,7 +39,16 @@ class PopularList extends React.Component {
 
     render() {
         return (
-            <div style={{display: (this.props.chartPage>0)?('block'):('none')}}>
+            <div 
+                style={{
+                    display: (this.props.chartPage>0)?('block'):('none'),
+                    position: 'absolute',
+                    left: '0',
+                    zIndex: '100',
+                    background: 'white',
+                    opacity: '0.9',
+                    width: '100%'
+                }}>
                 <div className="row" style={{width: "50%"}}>
                     <div style={{width: "50%", float: "left"}} onChange={this.handleLanguage}>
                         <input 

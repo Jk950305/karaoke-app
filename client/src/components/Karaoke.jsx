@@ -3,6 +3,7 @@ import PopularList from'./PopularList.jsx';
 import Controller from'./Controller.jsx';
 import YoutubeList from'./YoutubeList.jsx';
 import ErrorAlert from'./ErrorAlert.jsx';
+import Playlist from'./Playlist.jsx';
 import AudioPlayer from './../lib/AudioPlayer';
 import axios from 'axios';
 
@@ -38,6 +39,7 @@ class Karaoke extends React.Component {
             en_chart: [],
             chartPage: 0,
             ios_click: false,
+            queue: [],
         };
 
 
@@ -79,6 +81,10 @@ class Karaoke extends React.Component {
         this.findOnYoutube = this.findOnYoutube.bind(this);
         this.moveChart = this.moveChart.bind(this);
         this.resetChart = this.resetChart.bind(this);
+
+        this.enqueueMusic = this.enqueueMusic.bind(this);
+        this.removeFromQueue = this.removeFromQueue.bind(this);
+        this.playNext = this.playNext.bind(this);
     }
 
 /* React Page related methods */
@@ -477,6 +483,30 @@ class Karaoke extends React.Component {
         this.setState({ios_click : true});
     }
 
+    enqueueMusic(e,title,url){
+        e.preventDefault();
+        var queue = this.state.queue;
+        queue.push({title:title, url:url});
+        this.setState({yt_list:[],yt_title:""});
+    }
+
+    removeFromQueue(e,index){
+        e.preventDefault();
+        var queue = this.state.queue;
+        queue.splice(index,1);
+        this.setState({queue:queue});
+    }
+
+    playNext(e){
+        e.preventDefault();
+        var queue = this.state.queue;
+        if(queue.lenth<=0) return;
+        var elem = queue[0];
+        queue.splice(0,1);
+        this.setState({queue:queue});
+        this.getMedia(e,elem.title,elem.url);
+    }
+
 
 	render (){
 
@@ -485,6 +515,7 @@ class Karaoke extends React.Component {
                 <div id="header" className="title_header alert alert-info" onClick={e => this.refreshPage(e)}>
                     Infinite Coin Karaoke
                 </div>
+                <br/>
 
                 <div className="row">
                     <label
@@ -526,12 +557,25 @@ class Karaoke extends React.Component {
                 <ErrorAlert error={this.state.error} />
             
 
-                <YoutubeList yt_list = {this.state.yt_list} getMedia = {this.getMedia}/>
+                <YoutubeList 
+                    yt_list = {this.state.yt_list}
+                    getMedia = {this.getMedia}
+                    action = {this.state.action}
+                    loading = {this.state.loading}
+                    enqueueMusic = {this.enqueueMusic}
+                />
+
+                <Playlist 
+                    queue={this.state.queue} 
+                    removeFromQueue={this.removeFromQueue}
+                />
 
 
                 <div style={{display: (this.state.loading ==='loaded')?('initial'):('none')}}>
                     <hr/> 
                     <div className="row">
+
+
                         <FilenameLabel error={this.state.error} filename={this.state.filename} />
                         <div>
                             <video
@@ -548,6 +592,7 @@ class Karaoke extends React.Component {
                                 muted
                                 autoPlay
                                 controls
+                                onEnded={e=> console.log('d')}
 
                             >
                             </video>
@@ -567,7 +612,6 @@ class Karaoke extends React.Component {
                                 </div>
 
                             </div>
-                            <a className="btn btn-secondary" href={this.state.file} download={this.state.filename+".mp4"}>download</a>
                         </div>
                     </div>
                     <br/>
@@ -580,6 +624,10 @@ class Karaoke extends React.Component {
                         handlePitch={this.handlePitch}
                         handleTempo={this.handleTempo}
                         handleLatency={this.handleLatency}
+                        file={this.state.file}
+                        filename={this.state.filename}
+                        playNext={this.playNext}
+                        queue={this.state.queue}
                     />
                 </div>
 

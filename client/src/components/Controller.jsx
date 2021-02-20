@@ -3,7 +3,20 @@ const React = require('react');
 class Controller extends React.Component {
     render() {
         return (
+
             <div className="container">
+                <div className="row">
+                    <div className="col-sm">
+                        <button type="button" className="btn btns btn-secondary" disabled> &lt; </button>
+                    </div>
+                    <div className="col-sm tagg">
+                        <a className="btn btn-secondary" href={this.props.file} download={this.props.filename+".mp4"}>download</a>
+                    </div>
+                    <div className="col-sm">
+                        <button type="button" onClick={e => this.props.playNext(e)} className="btn btns btn-secondary" disabled={(this.props.queue.length<=0)}> &gt; </button>
+                    </div>
+                </div>
+
                 <div className="row">
                     <div className="col-sm">
                         <button id="decreasePitch" type="button" onClick={e => this.props.handlePitch(e)} className="btn btns btn-secondary" disabled={(this.props.pitch_key===-12)}> - </button>

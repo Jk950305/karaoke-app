@@ -51,7 +51,7 @@ class YoutubeList extends React.Component {
                     left: '0',
                     zIndex: '100',
                     background: 'white',
-                    opacity: '0.9',
+                    opacity: '1.0',
                     width: '100%'
 
                 }}

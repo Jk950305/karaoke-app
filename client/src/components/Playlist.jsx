@@ -36,7 +36,7 @@ class Playlist extends React.Component {
             <div className="row" style={{display: (this.props.queue.length<=0)?('none'):('block')  }}>
                 <hr/>
                 <span className="alert-info alert filename-label" style={{padding:'2px', width:'100%'}}>
-                    <p style={{marginBottom:"0",paddingBottom:"0"}}>Playlist</p>
+                    <p style={{marginBottom:"0",paddingBottom:"0"}}>Playlist ( {this.props.queue.length} )</p>
                     <p 
                         className="cursor"
                         style={{fontSize: "10px",float:"right",margin:"0 1% 0 0",padding:"0"}}

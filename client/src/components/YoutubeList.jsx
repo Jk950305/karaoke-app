@@ -48,13 +48,15 @@ class YoutubeList extends React.Component {
                 style={{
                     display: (this.props.yt_list.length>0)?('initial'):('none'),
                     position: 'absolute',
-                    left: '0',
                     zIndex: '100',
                     background: 'white',
                     opacity: '1.0',
-                    width: '80%',
-                    marginLeft: '10%',
-                    marginRight: '10%'
+                    width: '90%',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                    left:'0',
+                    right:'0',
+                    maxWidth: '1000px'
 
                 }}
             >

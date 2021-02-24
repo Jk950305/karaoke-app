@@ -1,6 +1,9 @@
 const React = require('react');
 
 class Playlist extends React.Component {
+    state = {
+        open : true,
+    };
     
     getPlaylist(list){
         var res = [];
@@ -22,14 +25,27 @@ class Playlist extends React.Component {
         return res;
     }
 
+    toggle(e){
+        e.preventDefault();
+        var truth_value = this.state.open;
+        this.setState({open: !truth_value});
+    }
+
     render() {
         return (
             <div className="row" style={{display: (this.props.queue.length<=0)?('none'):('block')  }}>
                 <hr/>
                 <span className="alert-info alert filename-label" style={{padding:'2px', width:'100%'}}>
-                    Playlist
+                    <p style={{marginBottom:"0",paddingBottom:"0"}}>Playlist</p>
+                    <p 
+                        className="cursor"
+                        style={{fontSize: "10px",float:"right",margin:"0 1% 0 0",padding:"0"}}
+                        onClick={e=>this.toggle(e)}
+                    >
+                        {(this.state.open)?('hide'):('show')}
+                    </p>
                 </span>
-                <table className="table" style={{width:'100%', margin:'0%'}}>
+                <table className="table" style={{width:'100%', margin:'0%', display: (this.state.open)?(""):("none") }}>
                     <tbody>
                         {this.getPlaylist(this.props.queue)}
                     </tbody>

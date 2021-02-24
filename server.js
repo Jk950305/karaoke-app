@@ -14,13 +14,17 @@ var cheerio = require('cheerio');
 var request = require('request');
 
 const {google} = require('googleapis');
-const api_key = process.env.API_KEY_2;
-
-
+const api_keys = [process.env.API_KEY_1,process.env.API_KEY_2,process.env.API_KEY_3];
 
 var tj_list;
 var singking_list;
 var timestamp = new Date();
+
+function getApiKey(){
+	const random = Math.floor(Math.random() * api_keys.length);
+	const result = api_keys[random];
+	return result;
+}
 
 function requestTJChart(url) {
 	var titles = new Array();
@@ -64,7 +68,7 @@ function requestTJChart(url) {
 function requestSingKingChart(){
 	return new Promise(function(resolve, reject) {
 		google.youtube('v3').playlistItems.list({
-			key: api_key,
+			key: getApiKey(),
 			part: 'id,snippet',
 			playlistId: 'PL8D4Iby0Bmm9y57_K3vBvkZiaGjIXD_x5',
 			maxResults: 50,
@@ -87,7 +91,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //get api_key
 app.get('/api/api_key', (req, res) => {
-	res.send({ api_key: api_key });
+	res.send({ api_key: getApiKey() });
  });
 
 

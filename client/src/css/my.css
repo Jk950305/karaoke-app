@@ -52,7 +52,7 @@ html{
 	text-align: center;
 	float:left;
 }
-.tagg > p, span {
+.tagg > p, a {
 	text-align: center;
 	width: 50%;
 	padding-top: 0.5em;

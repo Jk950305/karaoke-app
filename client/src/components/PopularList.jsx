@@ -47,7 +47,9 @@ class PopularList extends React.Component {
                     zIndex: '100',
                     background: 'white',
                     opacity: '0.9',
-                    width: '100%'
+                    width: '80%',
+                    marginLeft: '10%',
+                    marginRight: '10%'
                 }}>
                 <div className="row" style={{width: "50%"}}>
                     <div style={{width: "50%", float: "left"}} onChange={this.handleLanguage}>

@@ -561,6 +561,7 @@ class Karaoke extends React.Component {
                     action = {this.state.action}
                     loading = {this.state.loading}
                     enqueueMusic = {this.enqueueMusic}
+                    queue={this.state.queue} 
                 />
 
                 <Playlist 
@@ -590,8 +591,6 @@ class Karaoke extends React.Component {
                                 muted
                                 autoPlay
                                 controls
-                                onEnded={e=> console.log('d')}
-
                             >
                             </video>
                             <div id="hidden_media" className="tip_message" style={{display: (this.state.ios_click)?('none'):('block')}}>

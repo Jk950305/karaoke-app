@@ -28,7 +28,7 @@ class YoutubeList extends React.Component {
 
                             <button 
                                 className="btn btn-primary btn-sm"
-                                style={{'display' : (this.props.action!=='stop'||this.props.loading==='loading')?('block'):('none')}}
+                                style={{'display' : (this.props.action!=='stop'||this.props.loading==='loading'||this.props.queue.length>0)?('block'):('none')}}
                                 onClick={e => this.props.enqueueMusic(e,value.title,value.url)}
                             >
                                 rsrv
@@ -51,7 +51,7 @@ class YoutubeList extends React.Component {
                     zIndex: '100',
                     background: 'white',
                     opacity: '1.0',
-                    width: '90%',
+                    width: '100%',
                     marginLeft: 'auto',
                     marginRight: 'auto',
                     left:'0',

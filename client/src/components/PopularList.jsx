@@ -46,7 +46,7 @@ class PopularList extends React.Component {
                     zIndex: '100',
                     background: 'white',
                     opacity: '0.9',
-                    width: '90%',
+                    width: '100%',
                     marginLeft: 'auto',
                     marginRight: 'auto',
                     left:'0',

@@ -151,20 +151,22 @@ input[type=submit]{
   	width: 60%;
   	float:left;
   	margin: 1% 1% 0% 1%;
-  	height: 0;
+	height: auto;
 }
 .yt_title {
 	color: black;
 	font-size:0.9em;
-  	
+	margin: 0;
 }
 .yt_author {
 	color: grey;
 	font-size:0.7em;
+	margin: 0;
 }        
 .yt_element{
 	width:100%;
 	display: inline-block;
+	margin: 0;
 }                      
 .yt_table{
 	width:100%;
@@ -179,6 +181,8 @@ input[type=submit]{
 	margin: 0;
 	margin-top: 1.5vw;
 	height: 3vh;
+	font-size: 0.9em;
+	padding: 0;
 }
 
 .numbering, .cursor{

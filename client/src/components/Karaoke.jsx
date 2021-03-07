@@ -538,7 +538,7 @@ class Karaoke extends React.Component {
                 <div className="row">
                     <form onSubmit={e => this.searchOnYoutube(e)} className="youtube-form">
                         <input type="text" autoFocus="autofocus" style={{display:"none"}} />
-                        <input id="yt_title" value={this.state.yt_title} onChange={e => this.handleTitle(e)} type="text" placeholder="Search on Youtube" className="form-control"/>
+                        <input id="yt_title" value={this.state.yt_title} onChange={e => this.handleTitle(e)} type="text" autoComplete="off" placeholder="Search on Youtube" className="form-control"/>
                         <input type="submit" className="btn btn-danger btn-md" value="Search"/>
                     </form>
                 </div>

@@ -16,4 +16,4 @@
 
   Front-end is written in React.js that handles all user interactions and back-end is written in Express.js. There are three core API's used in this web application: Google YouTube Data API, YouTube Downloader(YTDL), and Web Audio API. 
 
-  Google YouTube Data API supports searching videos by title and retrieving video information in json format. YouTube Downloader(YTDL) in Node.js supports streaming and piping YouTube videos. Web Audio API and Soundtouch.js supports adjusting pitch and tempo together but I found soundtouch.js library that individually adjusts pitch and tempo.
+  Google YouTube Data API supports searching videos by title and retrieving video information in json format. YouTube Downloader(YTDL) in Node.js supports streaming and piping YouTube videos. Web Audio API supports adjusting pitch and tempo together but I found soundtouch.js library that individually adjusts pitch and tempo.

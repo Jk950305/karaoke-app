@@ -14,8 +14,8 @@ var cheerio = require('cheerio');
 var request = require('request');
 
 const {google} = require('googleapis');
-const api_keys = [process.env.API_KEY_1,process.env.API_KEY_2,process.env.API_KEY_3];
-
+const api_keys = [process.env.API_KEY_1,process.env.API_KEY_2];
+//const api_keys = ['AIzaSyBNjSR8QKwW6rLnsIgM-4vYHihmTRGi9O8','AIzaSyBBYTJd0APnrKH3P7epmCpOx0YD4-wORfc'];
 
 var tj_list;
 var singking_list;

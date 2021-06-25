@@ -15,8 +15,10 @@ var cheerio = require('cheerio');
 var request = require('request');
 
 const {google} = require('googleapis');
-const api_keys = [process.env.API_KEY_1,process.env.API_KEY_2];
-
+//const api_keys = [process.env.API_KEY_1,process.env.API_KEY_2];
+const api_keys = ["AIzaSyBBYTJd0APnrKH3P7epmCpOx0YD4-wORfc","AIzaSyBNjSR8QKwW6rLnsIgM-4vYHihmTRGi9O8"];
+//"AIzaSyBBYTJd0APnrKH3P7epmCpOx0YD4-wORfc"
+//"AIzaSyBNjSR8QKwW6rLnsIgM-4vYHihmTRGi9O8"
 var tj_list;
 var singking_list;
 var timestamp = new Date();
@@ -109,20 +111,8 @@ app.get('/api/music', async function (req, res) {
 	    const video = youtubedl(
 	    	url,
 	    	// Optional arguments passed to youtube-dl.
-	    	['--format=18'],
-	    	// Additional options can be given for calling `child_process.execFile()`.
-	    	{ cwd: __dirname }
+	    	['--format=18']
 	    );
-
-		// Will be called when the download starts.
-		/*
-		video.on('info', function(info) {
-			console.log('Download started')
-			console.log('filename: ' + info._filename)
-			console.log('size: ' + info.size)
-		});
-		*/
-
 		video.pipe(res);
 	}else{
 		res.send('source is not specified.',);

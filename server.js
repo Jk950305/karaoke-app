@@ -8,7 +8,8 @@ const path = require('path');
 const {join} = require('path');
 const fs = require('fs');
 
-const ytdl = require('ytdl-core');
+//const ytdl = require('ytdl-core');
+const youtubedl = require('youtube-dl');
 
 var cheerio = require('cheerio');
 var request = require('request');
@@ -102,7 +103,27 @@ app.get('/api/music', async function (req, res) {
 		res.writeHead(200, {
 	        'Content-Type': 'video/mp4'
 	    });
-	    ytdl(url, {quality: '18',} ).pipe(res);
+	    
+	    //ytdl(url, {quality: '18',} ).pipe(res);
+	    //fs.createReadStream("tmp.mp4").pipe(res);
+	    const video = youtubedl(
+	    	url,
+	    	// Optional arguments passed to youtube-dl.
+	    	['--format=18'],
+	    	// Additional options can be given for calling `child_process.execFile()`.
+	    	{ cwd: __dirname }
+	    );
+
+		// Will be called when the download starts.
+		/*
+		video.on('info', function(info) {
+			console.log('Download started')
+			console.log('filename: ' + info._filename)
+			console.log('size: ' + info.size)
+		});
+		*/
+
+		video.pipe(res);
 	}else{
 		res.send('source is not specified.',);
 	}

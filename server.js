@@ -7,15 +7,20 @@ const port = process.env.PORT || 5000;
 const path = require('path');
 const {join} = require('path');
 const fs = require('fs');
+const http = require('http');
 
-//const ytdl = require('ytdl-core');
-const youtubedl = require('youtube-dl');
+const ytdl = require('ytdl-core');
+//const youtubedl = require('youtube-dl');
 
-var cheerio = require('cheerio');
-var request = require('request');
+const cheerio = require('cheerio');
+const request = require('request');
+
+const cp = require('child_process'); 
+const ffmpeg = require('ffmpeg-static'); 
 
 const {google} = require('googleapis');
-const api_keys = [process.env.API_KEY_1,process.env.API_KEY_2];
+//const api_keys = [process.env.API_KEY_1,process.env.API_KEY_2];
+const api_keys = ["AIzaSyBBYTJd0APnrKH3P7epmCpOx0YD4-wORfc","AIzaSyBNjSR8QKwW6rLnsIgM-4vYHihmTRGi9O8"];
 
 var tj_list;
 var singking_list;
@@ -25,6 +30,16 @@ function getApiKey(){
 	const random = Math.floor(Math.random() * api_keys.length);
 	const result = api_keys[random];
 	return result;
+}
+
+
+function saveVideo(title, url){
+
+    //const info = await ytdl.getBasicInfo(url);
+    //console.log(info);
+    return new Promise(async function (resolve, reject){
+    	await ytdl(url, {quality: '18',}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
+    });
 }
 
 function requestTJChart(url) {
@@ -99,19 +114,94 @@ app.get('/api/api_key', (req, res) => {
 //send the piped youtube video to client diretly
 app.get('/api/music', async function (req, res) {
 	if(req.query.url != null && req.query.title != null){
+		//await saveVideo(req.query.title, req.query.url);
+		
+		var title = req.query.title;
 		var url = req.query.url;
-		res.writeHead(200, {
-	        'Content-Type': 'video/mp4'
-	    });
-	    
-	    //ytdl(url, {quality: '18',} ).pipe(res);
-	    //fs.createReadStream("tmp.mp4").pipe(res);
-	    const video = youtubedl(
-	    	url,
-	    	// Optional arguments passed to youtube-dl.
-	    	['--format=18']
-	    );
-		video.pipe(res);
+		//res.writeHead(206, { 'Content-Type': 'video/mp4' });
+		//ytdl(url, {quality: '160',}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
+        //ytdl(url, {quality: '160',}).pipe(res);
+        //ytdl(url, {quality: '18',}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
+        ytdl(url, {quality: '18',}).pipe(res);
+        //ytdl('http://www.youtube.com/watch?v=aqz-KE-bpKQ').pipe(fs.createWriteStream('video.mp4'));
+    	//ytdl(url, {filter: 'videoonly'}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
+        //ytdl(url, { filter: 'audioonly', highWaterMark: 1<<25}).pipe(res);
+
+        //var file = fs.createReadStream('video.mp4');
+		//file.pipe(res);
+
+/*
+        res.header('Content-Disposition', 'attachment;  filename=${title}.mkv');
+        const video = ytdl(url, {filter: 'videoonly'});
+        const audio = ytdl(url, { filter: 'audioonly', highWaterMark: 1<<25});
+        // Start the ffmpeg child process
+        const ffmpegProcess = cp.spawn(ffmpeg, [
+            // Remove ffmpeg's console spamming
+            '-loglevel', '0', '-hide_banner',
+            '-i', 'pipe:4',
+            '-i', 'pipe:5',
+            '-reconnect', '1',
+            '-reconnect_streamed', '1',
+            '-reconnect_delay_max', '4',
+            // Rescale the video
+            '-vf', 'scale=1980:1080',
+            // Choose some fancy codes
+            '-c:v', 'libx265', '-x265-params', 'log-level=0',
+            '-c:a', 'flac',
+            // Define output container
+            '-f', 'matroska', 'pipe:6',
+        ], {
+            windowsHide: true,
+            stdio: [
+            // Standard: stdin, stdout, stderr
+            'inherit', 'inherit', 'inherit',
+            // Custom: pipe:4, pipe:5, pipe:6
+             'pipe', 'pipe', 'pipe',
+            ],
+        });
+
+        audio.pipe(ffmpegProcess.stdio[4]);
+        video.pipe(ffmpegProcess.stdio[5]);
+        //ffmpegProcess.stdio[6].pipe(res); // Combining and piping the streams for download directly to the response
+        console.log(ffmpegProcess.stdio[6]);
+        ffmpegProcess.stdio[6].pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
+*/
+
+/*
+		//var path = 'downloads/'+title+'.mp4';
+	    var path = 'video.mp4';
+	    var stat = fs.statSync(path);
+		var total = stat.size;
+
+		if (req.headers.range) {
+
+		    // meaning client (browser) has moved the forward/back slider
+		    // which has sent this request back to this server logic ... cool
+
+
+		    var range = req.headers.range;
+		    var parts = range.replace(/bytes=/, "").split("-");
+		    var partialstart = parts[0];
+		    var partialend = parts[1];
+
+		    var start = parseInt(partialstart, 10);
+		    var end = partialend ? parseInt(partialend, 10) : total-1;
+		    var chunksize = (end-start)+1;
+		    console.log('RANGE: ' + start + ' - ' + end + ' = ' + chunksize);
+
+		    var file = fs.createReadStream(path, {start: start, end: end});
+		    res.writeHead(206, { 'Content-Range': 'bytes ' + start + '-' + end + '/' + total, 'Accept-Ranges': 'bytes', 'Content-Length': chunksize, 'Content-Type': 'video/mp4' });
+		    file.pipe(res);
+
+		} else {
+
+		    console.log('ALL: ' + total);
+		    res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'video/mp4' });
+		    fs.createReadStream(path).pipe(res);
+		}
+
+*/
+
 	}else{
 		res.send('source is not specified.',);
 	}

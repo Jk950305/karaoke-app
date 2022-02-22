@@ -86,7 +86,7 @@ function requestSingKingChart(){
 		google.youtube('v3').playlistItems.list({
 			key: getApiKey(),
 			part: 'id,snippet',
-			playlistId: 'PL8D4Iby0Bmm9y57_K3vBvkZiaGjIXD_x5',
+			playlistId: 'PLRxQryWW8Yw1IvHUYh-wfUcQ_TZ-xIIaC',
 			maxResults: 50,
 		}).then((res) => {
 			var arr = [];

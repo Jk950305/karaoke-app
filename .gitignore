@@ -25,3 +25,4 @@ yarn-debug.log*
 yarn-error.log*
 
 *api_key.txt
+*push_note.txt

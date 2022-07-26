@@ -14,11 +14,10 @@ class Modal extends React.Component {
     displayModal(){
       var res = [];
       res.push(
-          <div>
-            <h2>Video will end in {this.calculateRemainingTime(this.props.duration, this.props.t)} seconds.</h2>
-            <div><button>replay</button></div>
-            <div><button>cancel</button></div>
-            <div><button>next</button></div>
+          <div style={{padding:'5px'}}>
+            <h3>Video will end in {this.calculateRemainingTime(this.props.duration, this.props.t)} seconds.</h3>
+            {/*<div><button type="button" onClick={e => this.props.replay(e)} className="btn btns btn-secondary">replay</button></div>*/}
+            {/*<div><button type="button" onClick={e => this.props.playNext(e)} className="btn btns btn-secondary" hidden={(this.props.queue.length<=0)}>next</button></div>*/}
           </div>
           );
       return res;
@@ -38,7 +37,9 @@ class Modal extends React.Component {
                     top:'50%',
                     left:'25%',
                     right:'25%',
-                    maxWidth: '500px'
+                    maxWidth: '500px',
+                    opacity: '0.8',
+                    borderRadius: '25px'
                 }}>
 
                 <div>

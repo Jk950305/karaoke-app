@@ -21,6 +21,7 @@ const ffmpeg = require('ffmpeg-static');
 const {google} = require('googleapis');
 const api_keys = [process.env.API_KEY_1,process.env.API_KEY_2];
 
+
 var tj_list;
 var singking_list;
 var timestamp = new Date();
@@ -85,8 +86,8 @@ function requestSingKingChart(){
 		google.youtube('v3').playlistItems.list({
 			key: getApiKey(),
 			part: 'id,snippet',
-			playlistId: 'PLRxQryWW8Yw1IvHUYh-wfUcQ_TZ-xIIaC',
-			maxResults: 50,
+			playlistId: 'PL8D4Iby0Bmm8kRdq-rLobkB8p0smuZayv',
+			maxResults: 70,
 		}).then((res) => {
 			var arr = [];
 		    for(var i=0;i<res.data.items.length;i++){

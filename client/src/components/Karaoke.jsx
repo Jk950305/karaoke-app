@@ -4,7 +4,7 @@ import Controller from'./Controller.jsx';
 import YoutubeList from'./YoutubeList.jsx';
 import ErrorAlert from'./ErrorAlert.jsx';
 import Playlist from'./Playlist.jsx';
-import Modal from'./Modal.jsx';
+//import Modal from'./Modal.jsx';
 import AudioPlayer from './../lib/AudioPlayer';
 import axios from 'axios';
 
@@ -580,10 +580,13 @@ class Karaoke extends React.Component {
                         <div>
 
 
-                            <Modal
+                            {/*<Modal
                                 t = {this.state.t}
-                                duration = {this.state.duration} 
-                            />
+                                duration = {this.state.duration}
+                                playNext={this.playNext}
+                                queue={this.state.queue}
+                                replay={this.replay}
+                            />*/}
                             
                             <video
                                 ref={this.ref} 

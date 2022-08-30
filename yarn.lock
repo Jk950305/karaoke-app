@@ -1922,7 +1922,7 @@
   "resolved" "https://registry.npmjs.org/min-indent/-/min-indent-1.0.1.tgz"
   "version" "1.0.1"
 
-"miniget@^4.0.0", "miniget@^4.2.0", "miniget@^4.2.1", "miniget@^4.2.2":
+"miniget@^4.2.0", "miniget@^4.2.1", "miniget@^4.2.2":
   "integrity" "sha512-a7voNL1N5lDMxvTMExOkg+Fq89jM2vY8pAi9ZEWzZtfNmdfP6RXkvUtFnCAXoCv2T9k1v/fUJVaAEuepGcvLYA=="
   "resolved" "https://registry.npmjs.org/miniget/-/miniget-4.2.2.tgz"
   "version" "4.2.2"
@@ -3162,13 +3162,13 @@
     "minimist" "~1.2.5"
     "node-fzf" "~0.5.1"
 
-"ytdl-core@^4.0.4", "ytdl-core@^4.1.0", "ytdl-core@^4.10.1":
-  "integrity" "sha512-idBhW+e7HCzs5fR5cqp7Ci+mJhEch41YAaWabYlneQFCL6IGf6Hycv99yVx01Zl1Ci0t/70faOelMSrXaQTE/A=="
-  "resolved" "https://registry.npmjs.org/ytdl-core/-/ytdl-core-4.10.1.tgz"
-  "version" "4.10.1"
+"ytdl-core@^4.0.4", "ytdl-core@^4.1.0", "ytdl-core@^4.11.1":
+  "integrity" "sha512-0H2hl8kv9JA50qEUewPVpDCloyEVkXZfKJ6o2RNmkngfiY99pGVqE7jQbMT6Rs1QwZpF8GiMB50VWXqivpzlgQ=="
+  "resolved" "https://registry.npmjs.org/ytdl-core/-/ytdl-core-4.11.1.tgz"
+  "version" "4.11.1"
   dependencies:
     "m3u8stream" "^0.8.6"
-    "miniget" "^4.0.0"
+    "miniget" "^4.2.2"
     "sax" "^1.1.3"
 
 "ytdl@^1.4.1":

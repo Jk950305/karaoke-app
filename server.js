@@ -19,8 +19,7 @@ const cp = require('child_process');
 const ffmpeg = require('ffmpeg-static'); 
 
 const {google} = require('googleapis');
-//const api_keys = [process.env.API_KEY_1];
-const api_keys = ["AIzaSyDutZWzNWjTAUZcW0V00ICgoTrmvdTRIsE"];
+const api_keys = [process.env.API_KEY_1];
 
 var tj_list;
 var singking_list;

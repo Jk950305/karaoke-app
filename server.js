@@ -10,7 +10,6 @@ const fs = require('fs');
 const http = require('http');
 
 const ytdl = require('ytdl-core');
-//const youtubedl = require('youtube-dl');
 
 const cheerio = require('cheerio');
 const request = require('request');
@@ -33,9 +32,6 @@ function getApiKey(){
 
 
 function saveVideo(title, url){
-
-    //const info = await ytdl.getBasicInfo(url);
-    //console.log(info);
     return new Promise(async function (resolve, reject){
     	await ytdl(url, {quality: '18',}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
     });
@@ -214,11 +210,34 @@ app.get('/api/TJ', async function (req, res) {
 	max_date.setHours(0, 0, 0, 0);
 
 	var cur_date = new Date();
+
+	var yesterday = new Date();
+	
+	yesterday.setDate(cur_date.getDate()-1);
+
+	var e_year = yesterday.getFullYear();
+	var e_month = yesterday.getMonth()+1;
+	var e_day = yesterday.getDate();
+
+	yesterday.setDate(yesterday.getDate()-30);
+
+	var s_year = yesterday.getFullYear();
+	var s_month = yesterday.getMonth()+1;
+	var s_day = yesterday.getDate();
+
+	
+
+	s_month = (s_month<10)?("0"+s_month):(s_month);
+	s_day = (s_day<10)?("0"+s_day):(s_day);
+	e_month = (e_month<10)?("0"+e_month):(e_month);
+	e_day = (e_day<10)?("0"+e_day):(e_day);
+
 	if(tj_list && cur_date<max_date){
 		chart = tj_list;
 	}else{
 		var url = 'http://www.tjmedia.co.kr/tjsong/song_monthPopular.asp';
-		chart = await requestTJChart(url);
+		var new_url = 'http://www.tjmedia.com/tjsong/song_monthPopular.asp?strType=1&SYY='+s_year+'&SMM='+s_month+'&SDD='+s_day+'&EYY='+e_year+'&EMM='+e_month+'&EDD='+e_day;
+		chart = await requestTJChart(new_url);
 		tj_list = chart;
 		timestamp = new Date();
 	}

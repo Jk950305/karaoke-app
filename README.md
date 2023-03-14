@@ -1,7 +1,7 @@
 # Infinite Coin Karaoke
 
   Sing your favourite songs with altered pitch and tempo, right on your mobile and desktop. 
-  URL: https://infinite-coin-karaoke.herokuapp.com/
+  URL: https://infinite-coin-karaoke.onrender.com/
   (please allow up to 15 seconds to load the heroku app)
 
 

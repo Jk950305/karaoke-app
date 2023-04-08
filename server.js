@@ -113,17 +113,21 @@ app.get('/api/music', async function (req, res) {
 		
 		var title = req.query.title;
 		var url = req.query.url;
+
+		try {
 		//res.writeHead(206, { 'Content-Type': 'video/mp4' });
 		//ytdl(url, {quality: '160',}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
         //ytdl(url, {quality: '160',}).pipe(res);
-        //ytdl(url, {quality: '18',}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
-        ytdl(url, {quality: '18',}).pipe(res);
+        //ytdl(url, {quality: '18',}aqz-KE).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
+        	ytdl(url, {quality: '18',}).pipe(res);
+        	console.log(url)
         //ytdl('http://www.youtube.com/watch?v=aqz-KE-bpKQ').pipe(fs.createWriteStream('video.mp4'));
+        //ytdl(url).pipe(fs.createWriteStream('video.mp4'));
     	//ytdl(url, {filter: 'videoonly'}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
         //ytdl(url, { filter: 'audioonly', highWaterMark: 1<<25}).pipe(res);
 
-        //var file = fs.createReadStream('video.mp4');
-		//file.pipe(res);
+	        // var file = fs.createReadStream('shim.mp4');
+			// file.pipe(res);
 
 /*
         res.header('Content-Disposition', 'attachment;  filename=${title}.mkv');
@@ -196,6 +200,9 @@ app.get('/api/music', async function (req, res) {
 		}
 
 */
+    	}catch(error){
+    		console.log(error);
+    	}
 
 	}else{
 		res.send('source is not specified.',);
@@ -262,6 +269,13 @@ app.get('/api/SingKing', async function (req, res) {
 	}
 	res.contentType('application/json');
 	res.send(JSON.stringify(chart));
+});
+
+app.get('\download' , (req, res) => {
+    const v_id = req.query.url.split('v=')[1];
+    return res.render('download', {
+        url: "https://www.youtube.com/embed/AOqFdxC3s_k",
+    });
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

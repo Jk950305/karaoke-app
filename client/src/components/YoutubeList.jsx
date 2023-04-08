@@ -9,19 +9,20 @@ class YoutubeList extends React.Component {
                 res.push(<tr key="-1"><td><p>{value.message}</p></td></tr>);
             }else{
                 res.push(<tr key={key}><td>
-                    <div className="yt_element">
-                        <div className="yt_thumb">
+                    <div className="yt_element row">
+                        <div className="yt_thumb col-md-1" >
                             <img src={value.thumbnail} alt="" className="yt_image"/>
                             <p className="yt_time">({value.time})</p>
                         </div>
-                        <div className="yt_info">
+                        <div className="yt_info col-md-1" >
                             <p className="yt_title">{value.title}</p>
                             <p className="yt_author">{value.author}</p> 
                         </div>
-                        <div className="yt_reserve">
+                        <div className="yt_reserve col-md-1" >
                             <button 
                                 className="btn btn-danger btn-sm"
                                 onClick={e => this.props.getMedia(e,value.title,value.url)}
+                                style={{}}
                             >
                                 play
                             </button>
@@ -50,7 +51,7 @@ class YoutubeList extends React.Component {
                     position: 'absolute',
                     zIndex: '100',
                     background: 'white',
-                    opacity: '1.0',
+                    opacity: '0.85',
                     width: '100%',
                     marginLeft: 'auto',
                     marginRight: 'auto',

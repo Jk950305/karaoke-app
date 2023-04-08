@@ -513,135 +513,163 @@ class Karaoke extends React.Component {
 
 	  	return (
 	  		<div className="Karaoke">
+                {/*<div class="row">
+                  <div class="col-md-3">col</div>
+                  <div class="col-md-3">col</div>
+                  <div class="col-md-3">col</div>
+                  <div class="col-md-3">col</div>
+                </div>*/}
+
                 <div id="header" className="title_header alert alert-info" onClick={e => this.refreshPage(e)}>
-                    Infinite Coin Karaoke
-                </div>
-                <div className="row">
-                    <label
-                        className="btn btn-primary btn-md file-btns"
-                        htmlFor="upload-file"
-                        style={{marginRight: '0.25em', marginBottom: '1em'}}
-                    >
-                        <input
-                            id="upload-file"
-                            accept="video"
-                            type="file"
-                            style={{display: 'none'}}
-                            onChange={e => this.handleFileChange(e)}
-                        />
-                        Upload from Your Device
-                    </label>
-
-                    <button className="btn btn-primary btn-md file-btns" style={{marginRight: '0.25em', marginBottom: '1em'}} onClick={e => this.toggleTJChart(e)}>{(this.state.chartPage>0)?('Hide'):('Show')} Popular Songs</button>
-
+                    <div>Infinite Coin Karaoke</div>
+                    <div style={{marginLeft:'90%', fontSize:'5px'}}>JK</div>
                 </div>
 
-                <div className="row">
-                    <form onSubmit={e => this.searchOnYoutube(e)} className="youtube-form">
-                        <input type="text" autoFocus="autofocus" style={{display:"none"}} />
-                        <input id="yt_title" value={this.state.yt_title} onChange={e => this.handleTitle(e)} type="text" autoComplete="off" placeholder="Search on Youtube" className="form-control"/>
-                        <input type="submit" className="btn btn-danger btn-md" value="Search"/>
-                    </form>
-                </div>
-
-                <PopularList
-                    en_chart={this.state.en_chart}
-                    kr_chart={this.state.kr_chart}
-                    chartPage={this.state.chartPage}
-                    findOnYoutube={this.findOnYoutube}
-                    moveChart={this.moveChart}
-                    resetChart={this.resetChart}
-                />
-
-                <ErrorAlert error={this.state.error} />
-            
-
-                <YoutubeList 
-                    yt_list = {this.state.yt_list}
-                    getMedia = {this.getMedia}
-                    action = {this.state.action}
-                    loading = {this.state.loading}
-                    enqueueMusic = {this.enqueueMusic}
-                    queue={this.state.queue} 
-                />
-
-                <Playlist 
-                    queue={this.state.queue} 
-                    removeFromQueue={this.removeFromQueue}
-                />
+                
 
 
-                <div style={{display: (this.state.loading ==='loaded')?('initial'):('none')}}>
-                    <hr/> 
-                    <div className="row">
 
+                <div className="row" >
+                    <ErrorAlert error={this.state.error} />
+                    <hr/>
 
-                        <FilenameLabel error={this.state.error} filename={this.state.filename} />
-                        <div>
-
-
-                            {/*<Modal
-                                t = {this.state.t}
-                                duration = {this.state.duration}
-                                playNext={this.playNext}
-                                queue={this.state.queue}
-                                replay={this.replay}
-                            />*/}
-                            
-                            <video
-                                ref={this.ref} 
-                                src={this.state.file} 
-                                id="my-video" 
-                                className="vid" 
-                                onTimeUpdate={e => this.handleSeek(e)} 
-                                onVolumeChange={e => this.handleVolume(e)}
-                                onPlay={e => this.syncMusic(e)} 
-                                onPause={this.pause.bind(this)} 
-                                controlsList="nodownload" 
-                                playsInline
-                                muted
-                                autoPlay
-                                controls
-                            >
-                            </video>
-                            <div id="hidden_media" className="tip_message" style={{display: (this.state.ios_click)?('none'):('block')}}>
-                                <audio
-                                    ref={this.sub}
-                                    className="vid" 
-                                    src="/silence.mp3"
-                                    controls
-                                    playsInline
-                                    onClick={e=>this.handleSub(e)}
-                                    style={{margin:'0'}}
+                    <div className="col-md-6">
+                         
+                        <div className="row">
+                            <div className="row">
+                                <label
+                                    className="btn btn-primary btn-md file-btns"
+                                    htmlFor="upload-file"
+                                    style={{marginRight: '0.25em', marginBottom: '1em'}}
                                 >
-                                </audio>
-                                <div className="tip_message" z-index='10' style={{width:'100px', margin:'0', backgroundColor:'red'}}>
-                                    <p style={{fontSize:'0.8em', color:'white'}}>please click this button to play audio.</p>
-                                </div>
+                                    <input
+                                        id="upload-file"
+                                        accept="video"
+                                        type="file"
+                                        style={{display: 'none'}}
+                                        onChange={e => this.handleFileChange(e)}
+                                    />
+                                    Upload from Your Device
+                                </label>
+
+                                <button className="btn btn-primary btn-md file-btns" style={{marginRight: '0.25em', marginBottom: '1em'}} onClick={e => this.toggleTJChart(e)}>{(this.state.chartPage>0)?('Hide'):('Show')} Popular Songs</button>
 
                             </div>
+
+                            <div className="row">
+                                <form onSubmit={e => this.searchOnYoutube(e)} className="youtube-form">
+                                    <input type="text" autoFocus="autofocus" style={{display:"none"}} />
+                                    <input id="yt_title" value={this.state.yt_title} onChange={e => this.handleTitle(e)} type="text" autoComplete="off" placeholder="Search on Youtube" className="form-control"/>
+                                    <input type="submit" className="btn btn-danger btn-md" value="Search"/>
+                                </form>
+                            </div>
+
+                            <PopularList
+                                en_chart={this.state.en_chart}
+                                kr_chart={this.state.kr_chart}
+                                chartPage={this.state.chartPage}
+                                findOnYoutube={this.findOnYoutube}
+                                moveChart={this.moveChart}
+                                resetChart={this.resetChart}
+                            />
+                        
+
+                            <YoutubeList 
+                                yt_list = {this.state.yt_list}
+                                getMedia = {this.getMedia}
+                                action = {this.state.action}
+                                loading = {this.state.loading}
+                                enqueueMusic = {this.enqueueMusic}
+                                queue={this.state.queue} 
+                            />
+
+
+
                         </div>
+                        <br/>
+
+
+                        
                     </div>
-                    <br/>
+                    <div className="col-md-6">
+                        <div style={{width:'100%', display: (this.state.loading ==='loading')?('initial'):('none')}}>
+                            <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" style={{ width:'50%',marginLeft:'25%', marginRight:'25%'}} alt="loading..." />
+                        </div>
+                        <Playlist 
+                            queue={this.state.queue} 
+                            removeFromQueue={this.removeFromQueue}
+                        />
+                        <div style={{display: (this.state.loading ==='loaded')?('initial'):('none')}}>
+                            <FilenameLabel error={this.state.error} filename={this.state.filename} />
+                            <div>
 
 
-                    <Controller
-                        pitch_key={this.state.pitch_key}
-                        tempo={this.state.tempo}
-                        latency={this.state.latency}
-                        handlePitch={this.handlePitch}
-                        handleTempo={this.handleTempo}
-                        handleLatency={this.handleLatency}
-                        file={this.state.file}
-                        filename={this.state.filename}
-                        playNext={this.playNext}
-                        queue={this.state.queue}
-                    />
+                                {/*<Modal
+                                    t = {this.state.t}
+                                    duration = {this.state.duration}
+                                    playNext={this.playNext}
+                                    queue={this.state.queue}
+                                    replay={this.replay}
+                                />*/}
+                                
+                                <video
+                                    ref={this.ref} 
+                                    src={this.state.file} 
+                                    id="my-video" 
+                                    className="vid" 
+                                    onTimeUpdate={e => this.handleSeek(e)} 
+                                    onVolumeChange={e => this.handleVolume(e)}
+                                    onPlay={e => this.syncMusic(e)} 
+                                    onPause={this.pause.bind(this)} 
+                                    controlsList="nodownload" 
+                                    playsInline
+                                    muted
+                                    autoPlay
+                                    controls
+                                >
+                                </video>
+                                <div id="hidden_media" className="tip_message" style={{display: (this.state.ios_click)?('none'):('block')}}>
+                                    <audio
+                                        ref={this.sub}
+                                        className="vid" 
+                                        src="/silence.mp3"
+                                        controls
+                                        playsInline
+                                        onClick={e=>this.handleSub(e)}
+                                        style={{margin:'0'}}
+                                    >
+                                    </audio>
+                                    <div className="tip_message" z-index='10' style={{width:'100px', margin:'0', backgroundColor:'red'}}>
+                                        <p style={{fontSize:'0.8em', color:'white'}}>please click this button to play audio.</p>
+                                    </div>
+
+                                </div>
+                                <Controller
+                                    pitch_key={this.state.pitch_key}
+                                    tempo={this.state.tempo}
+                                    latency={this.state.latency}
+                                    handlePitch={this.handlePitch}
+                                    handleTempo={this.handleTempo}
+                                    handleLatency={this.handleLatency}
+                                    file={this.state.file}
+                                    filename={this.state.filename}
+                                    playNext={this.playNext}
+                                    queue={this.state.queue}
+                                />
+                            </div>
+                        </div>
+                        
+                            
+
+                    </div>
                 </div>
 
-                <div style={{width:'100%', display: (this.state.loading ==='loading')?('initial'):('none')}}>
-                    <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" style={{ width:'50%',marginLeft:'25%', marginRight:'25%'}} alt="loading..." />
-                </div>
+                
+
+
+
+
+
 
                 <div className="row" id="ios_tips">
                     <hr/>

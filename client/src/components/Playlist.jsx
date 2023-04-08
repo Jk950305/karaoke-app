@@ -34,7 +34,6 @@ class Playlist extends React.Component {
     render() {
         return (
             <div className="row" style={{display: (this.props.queue.length<=0)?('none'):('block')  }}>
-                <hr/>
                 <span className="alert-info alert filename-label" style={{padding:'2px', width:'100%'}}>
                     <p style={{marginBottom:"0",paddingBottom:"0"}} className="cursor" onClick={e=>this.toggle(e)}>Playlist ( {this.props.queue.length} ) {(this.state.open)?('▲'):('▼')}</p>
                     <p 

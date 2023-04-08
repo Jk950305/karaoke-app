@@ -14,18 +14,8 @@ render() {
             <div>
                 <div>
                 <Karaoke/>
-                    {/*<BrowserRouter>
-                        <div>
-                            <Navigation />
-                            <Switch>
-                                <Route path="/" component={Karaoke} exact/>
-                            </Switch>
-                        </div> 
-                    </BrowserRouter>
-                */}
                 </div>
             </div>
-            <hr/>
         </div>
     );
   }

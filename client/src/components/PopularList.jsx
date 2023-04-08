@@ -45,7 +45,7 @@ class PopularList extends React.Component {
                     position: 'absolute',
                     zIndex: '100',
                     background: 'white',
-                    opacity: '0.9',
+                    opacity: '0.85',
                     width: '100%',
                     marginLeft: 'auto',
                     marginRight: 'auto',
@@ -53,7 +53,7 @@ class PopularList extends React.Component {
                     right:'0',
                     maxWidth: '1000px'
                 }}>
-                <div className="row" style={{width: "50%"}}>
+                <div >
                     <div style={{width: "50%", float: "left"}} onChange={this.handleLanguage}>
                         <input 
                             type="radio" 

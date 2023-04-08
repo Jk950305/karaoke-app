@@ -1,8 +1,10 @@
 
+
 html{
-	max-width: 1000px;
+	max-width: 1500px;
 	margin-left:auto;
 	margin-right: auto;
+
 }
 
 .filename-label {
@@ -28,11 +30,10 @@ html{
 	cursor: pointer;
 }
 .row {
-	width: 90%;
+	width: 100%;
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
-	font-size: 0.9em;
 }
 
 .container > .row{
@@ -179,7 +180,7 @@ input[type=submit]{
 .yt_reserve > button{
 	width:100%;
 	margin: 0;
-	margin-top: 1.5vw;
+	margin-top: 0.3vw;
 	height: 2em;
 	font-size: 0.9em;
 	padding: 0;

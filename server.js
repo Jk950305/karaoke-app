@@ -81,8 +81,8 @@ function requestSingKingChart(){
 		google.youtube('v3').playlistItems.list({
 			key: getApiKey(),
 			part: 'id,snippet',
-			playlistId: 'PL8D4Iby0Bmm8kRdq-rLobkB8p0smuZayv',
-			maxResults: 70,
+			playlistId: 'PL8D4Iby0Bmm9y57_K3vBvkZiaGjIXD_x5',
+			maxResults: 50,
 		}).then((res) => {
 			var arr = [];
 		    for(var i=0;i<res.data.items.length;i++){
@@ -120,8 +120,8 @@ app.get('/api/music', async function (req, res) {
         //ytdl(url, {quality: '160',}).pipe(res);
         //ytdl(url, {quality: '18',}aqz-KE).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
         	ytdl(url, {quality: '18',}).pipe(res);
-        	console.log(url)
-        //ytdl('http://www.youtube.com/watch?v=aqz-KE-bpKQ').pipe(fs.createWriteStream('video.mp4'));
+        	//console.log(url)
+        	//ytdl('http://www.youtube.com/watch?v=aqz-KE-bpKQ').pipe(fs.createWriteStream('video.mp4'));
         //ytdl(url).pipe(fs.createWriteStream('video.mp4'));
     	//ytdl(url, {filter: 'videoonly'}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
         //ytdl(url, { filter: 'audioonly', highWaterMark: 1<<25}).pipe(res);

@@ -64,7 +64,7 @@ html{
 }
 .file-btns{
 	width:48%;
-	font-size: 0.9em;
+	font-size: 0.8em;
 }
 .youtube-form{
 	width: 100%;
@@ -182,7 +182,7 @@ input[type=submit]{
 	margin: 0;
 	margin-top: 0.3vw;
 	height: 2em;
-	font-size: 0.9em;
+	font-size: 0.8em;
 	padding: 0;
 }
 
@@ -199,6 +199,7 @@ th, .cursor{
 .shrink-fonts{
 	font-size: 0.9em;
 }
+
 
 @supports (-webkit-touch-callout: none) {
    /* CSS specific to iOS devices */ 

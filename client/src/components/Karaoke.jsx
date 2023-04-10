@@ -522,7 +522,7 @@ class Karaoke extends React.Component {
 
                 <div id="header" className="title_header alert alert-info" onClick={e => this.refreshPage(e)}>
                     <div>Infinite Coin Karaoke</div>
-                    <div style={{marginLeft:'90%', fontSize:'5px'}}>JK</div>
+                    <div style={{marginLeft:'90%', fontSize:'0.3em'}}>JK</div>
                 </div>
 
                 

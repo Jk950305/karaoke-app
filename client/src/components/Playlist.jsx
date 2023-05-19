@@ -12,7 +12,7 @@ class Playlist extends React.Component {
                         <p style={{width: '5%', float:'left', margin:'0'}}>
                             {i+1}
                         </p>
-                        <div style={{width:'90%', float:'left'}}>
+                        <div style={{width:'90%', float:'left'}} onClick={e => {this.props.getMedia(e,list[i].title,list[i].url); this.props.removeFromQueue(e,i)} }>
                             {list[i].title}
                         </div>
                         <p
@@ -36,13 +36,6 @@ class Playlist extends React.Component {
             <div className="row" style={{display: (this.props.queue.length<=0)?('none'):('block')  }}>
                 <span className="alert-info alert filename-label" style={{padding:'2px', width:'100%'}}>
                     <p style={{marginBottom:"0",paddingBottom:"0"}} className="cursor" onClick={e=>this.toggle(e)}>Playlist ( {this.props.queue.length} ) {(this.state.open)?('▲'):('▼')}</p>
-                    <p 
-                        className="cursor"
-                        style={{fontSize: "10px",float:"right",margin:"0 1% 0 0",padding:"0"}}
-                        onClick={e=>this.toggle(e)}
-                    >
-                        {(this.state.open)?('hide'):('show')}
-                    </p>
                 </span>
                 <table className="table" style={{width:'100%', margin:'0%', display: (this.state.open)?(""):("none") }}>
                     <tbody>

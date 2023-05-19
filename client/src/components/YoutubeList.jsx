@@ -22,7 +22,6 @@ class YoutubeList extends React.Component {
                             <button 
                                 className="btn btn-danger btn-sm"
                                 onClick={e => this.props.getMedia(e,value.title,value.url)}
-                                style={{}}
                             >
                                 play
                             </button>

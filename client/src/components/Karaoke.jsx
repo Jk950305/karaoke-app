@@ -571,6 +571,7 @@ class Karaoke extends React.Component {
                                 findOnYoutube={this.findOnYoutube}
                                 moveChart={this.moveChart}
                                 resetChart={this.resetChart}
+                                getMedia = {this.getMedia}
                             />
                         
 
@@ -592,13 +593,16 @@ class Karaoke extends React.Component {
                         
                     </div>
                     <div className="col-md-6">
-                        <div style={{width:'100%', display: (this.state.loading ==='loading')?('initial'):('none')}}>
-                            <img src="/loading_slug.png" style={{ width:'50%',marginLeft:'25%', marginRight:'25%'}} alt="loading..." />
-                        </div>
                         <Playlist 
                             queue={this.state.queue} 
                             removeFromQueue={this.removeFromQueue}
+                            getMedia = {this.getMedia}
                         />
+
+                        <div style={{width:'100%', display: (this.state.loading ==='loading')?('initial'):('none')}}>
+                            <img src="/loading_slug.png" style={{ width:'50%',marginLeft:'25%', marginRight:'25%'}} alt="loading..." />
+                        </div>
+
                         <div style={{display: (this.state.loading ==='loaded')?('initial'):('none')}}>
                             <FilenameLabel error={this.state.error} filename={this.state.filename} />
                             <div>

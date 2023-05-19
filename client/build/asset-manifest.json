@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/static/css/main.2eb44735.css",
-    "main.js": "/static/js/main.5a7b5a84.js",
+    "main.js": "/static/js/main.8cfa7954.js",
     "static/media/octicons.svg": "/static/media/octicons.5472423b7cc0644036ce.svg",
     "static/media/octicons.eot": "/static/media/octicons.383a219fe98da503a797.eot",
     "static/media/octicons.ttf": "/static/media/octicons.0b9f21aae57add614b87.ttf",
     "static/media/octicons.woff": "/static/media/octicons.bc05fe5ee7f61e6cfe1a.woff",
     "index.html": "/index.html",
     "main.2eb44735.css.map": "/static/css/main.2eb44735.css.map",
-    "main.5a7b5a84.js.map": "/static/js/main.5a7b5a84.js.map"
+    "main.8cfa7954.js.map": "/static/js/main.8cfa7954.js.map"
   },
   "entrypoints": [
     "static/css/main.2eb44735.css",
-    "static/js/main.5a7b5a84.js"
+    "static/js/main.8cfa7954.js"
   ]
 }

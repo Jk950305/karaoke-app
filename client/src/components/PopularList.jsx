@@ -19,7 +19,7 @@ class PopularList extends React.Component {
                 var elem = chart[i];
                 if(elem){
                     var title = elem.title;
-                    result.push(<tr key={i}><td style={{width:'15%'}}></td><td style={{width:'70%'}} onClick={e=>this.props.findOnYoutube(e)}>{title}</td><td style={{width:'15%'}}></td></tr>);
+                    result.push(<tr key={i}><td style={{width:'5%'}}></td><td style={{width:'90%'}} onClick={e=>this.props.findOnYoutube(e)}>{title}</td><td style={{width:'5%'}}></td></tr>);
                 }
             }
         }

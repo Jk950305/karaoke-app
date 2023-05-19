@@ -593,7 +593,7 @@ class Karaoke extends React.Component {
                     </div>
                     <div className="col-md-6">
                         <div style={{width:'100%', display: (this.state.loading ==='loading')?('initial'):('none')}}>
-                            <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" style={{ width:'50%',marginLeft:'25%', marginRight:'25%'}} alt="loading..." />
+                            <img src="/loading_slug.png" style={{ width:'50%',marginLeft:'25%', marginRight:'25%'}} alt="loading..." />
                         </div>
                         <Playlist 
                             queue={this.state.queue} 

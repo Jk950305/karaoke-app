@@ -5,17 +5,12 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const path = require('path');
-const {join} = require('path');
 const fs = require('fs');
-const http = require('http');
 
 const ytdl = require('@distube/ytdl-core');
 
 const cheerio = require('cheerio');
 const request = require('request');
-
-const cp = require('child_process'); 
-const ffmpeg = require('ffmpeg-static'); 
 
 const {google} = require('googleapis');
 const api_keys = ['AIzaSyDrg3aXP84rkZwg4EADwiCnVwEOeeBPjhU', 'AIzaSyDutZWzNWjTAUZcW0V00ICgoTrmvdTRIsE'];

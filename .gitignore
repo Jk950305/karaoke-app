@@ -26,3 +26,5 @@ yarn-error.log*
 
 api_keys.txt
 *push_note.txt
+
+package-lock.json

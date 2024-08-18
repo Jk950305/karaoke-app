@@ -9,7 +9,7 @@ const {join} = require('path');
 const fs = require('fs');
 const http = require('http');
 
-const ytdl = require('ytdl-core');
+const ytdl = require('@distube/ytdl-core');
 
 const cheerio = require('cheerio');
 const request = require('request');

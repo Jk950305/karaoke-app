@@ -7,7 +7,7 @@ const port = process.env.PORT || 5000;
 const path = require('path');
 const fs = require('fs');
 
-const ytdl = require('@distube/ytdl-core');
+//const ytdl = require('@distube/ytdl-core');
 
 const ytdlp = require('node-ytdlp-wrap');
 
@@ -51,7 +51,7 @@ function getApiKey(){
 
 function saveVideo(title, url){
     return new Promise(async function (resolve, reject){
-    	await ytdl(url, {quality: '18',}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
+    	await ytdlp.downloader(url, ['-f', '18']).stream.pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
     });
 }
 

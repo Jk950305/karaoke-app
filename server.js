@@ -9,9 +9,10 @@ const fs = require('fs');
 
 //const ytdl = require('@distube/ytdl-core');
 
-const ytdlp = require('node-ytdlp-wrap');
+const YTDlpWrap = require('yt-dlp-wrap').default;
 
 
+const ytDlpWrap = new YTDlpWrap('yt-dlp');
 
 
 
@@ -151,8 +152,16 @@ app.get('/api/music', async function (req, res) {
 
 
 
-			const downloader = ytdlp.downloader(url, ['-f', '18']);
-			downloader.stream.pipe(res);
+			// const downloader = ytdlp.downloader(url, ['-f', '18']);
+			// downloader.stream.pipe(res);
+
+
+			let readableStream = ytDlpWrap.execStream([
+				url,
+				'-f',
+				'18',
+			]);
+			readableStream.pipe(res);
 
 
         	//console.log(url)

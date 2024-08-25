@@ -9,6 +9,28 @@ const fs = require('fs');
 
 const ytdl = require('@distube/ytdl-core');
 
+const ytdlp = require('node-ytdlp-wrap');
+
+
+
+
+
+const cookies = [
+	{ name: "cookie1", value: "" },
+	{ name: "cookie2", value: "COOKIE2_HERE" },
+];
+
+// (Optional) http-cookie-agent / undici agent options
+// Below are examples, NOT the recommended options
+const agentOptions = {
+	pipelining: 5,
+	maxRedirections: 0,
+	localAddress: "127.0.0.1",
+};
+
+// agent should be created once if you don't want to change your cookie
+
+
 const cheerio = require('cheerio');
 const request = require('request');
 
@@ -18,6 +40,7 @@ const api_keys = ['AIzaSyDrg3aXP84rkZwg4EADwiCnVwEOeeBPjhU', 'AIzaSyDutZWzNWjTAU
 var tj_list;
 var singking_list;
 var timestamp = new Date();
+
 
 function getApiKey(){
 	const random = Math.floor(Math.random() * api_keys.length);
@@ -114,7 +137,24 @@ app.get('/api/music', async function (req, res) {
 		//ytdl(url, {quality: '160',}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
         //ytdl(url, {quality: '160',}).pipe(res);
         //ytdl(url, {quality: '18',}aqz-KE).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
-        	ytdl(url, {quality: '18',}).pipe(res);
+        	//ytdl(url, {quality: '18',}).pipe(res);
+
+
+
+			//
+			// let readableStream = ytDlpWrap.execStream([
+			// 	url,
+			// 	'-f',
+			// 	'best[ext=mp4]',
+			// ]);
+			// readableStream.pipe(res);
+
+
+
+			const downloader = ytdlp.downloader(url, ['-f', '18']);
+			downloader.stream.pipe(res);
+
+
         	//console.log(url)
         	//ytdl('http://www.youtube.com/watch?v=aqz-KE-bpKQ').pipe(fs.createWriteStream('video.mp4'));
         //ytdl(url).pipe(fs.createWriteStream('video.mp4'));

@@ -9,10 +9,12 @@ const fs = require('fs');
 
 //const ytdl = require('@distube/ytdl-core');
 
+
 const YTDlpWrap = require('yt-dlp-wrap').default;
-
-
-const ytDlpWrap = new YTDlpWrap('yt-dlp');
+const binPath = __dirname+path.sep+'yt-dlp';
+console.log("binPath="+binPath);
+const ytDlpWrap = new YTDlpWrap(binPath);
+console.log("YTDlpWrap.binPath="+ytDlpWrap.getBinaryPath());
 
 
 

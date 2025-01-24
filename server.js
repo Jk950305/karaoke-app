@@ -1,20 +1,22 @@
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
 const path = require('path');
 const fs = require('fs');
 
-//const ytdl = require('@distube/ytdl-core');
+const ytdl = require('@distube/ytdl-core');
 
 
-const YTDlpWrap = require('yt-dlp-wrap').default;
-const binPath = __dirname+path.sep+'yt-dlp';
-console.log("binPath="+binPath);
-const ytDlpWrap = new YTDlpWrap(binPath);
-console.log("YTDlpWrap.binPath="+ytDlpWrap.getBinaryPath());
+// const YTDlpWrap = require('yt-dlp-wrap').default;
+// const binPath = __dirname+path.sep+'yt-dlp';
+// console.log("binPath="+binPath);
+// const ytDlpWrap = new YTDlpWrap(binPath);
+// console.log("YTDlpWrap.binPath="+ytDlpWrap.getBinaryPath());
 
 
 
@@ -38,7 +40,7 @@ const cheerio = require('cheerio');
 const request = require('request');
 
 const {google} = require('googleapis');
-const api_keys = ['AIzaSyDrg3aXP84rkZwg4EADwiCnVwEOeeBPjhU', 'AIzaSyDutZWzNWjTAUZcW0V00ICgoTrmvdTRIsE'];
+const api_keys = [process.env.API_KEY_1];
 
 var tj_list;
 var singking_list;
@@ -140,7 +142,7 @@ app.get('/api/music', async function (req, res) {
 		//ytdl(url, {quality: '160',}).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
         //ytdl(url, {quality: '160',}).pipe(res);
         //ytdl(url, {quality: '18',}aqz-KE).pipe(fs.createWriteStream('downloads/'+title+'.mp4'));
-        	//ytdl(url, {quality: '18',}).pipe(res);
+        	ytdl(url, {quality: '18',}).pipe(res);
 
 
 
@@ -158,12 +160,12 @@ app.get('/api/music', async function (req, res) {
 			// downloader.stream.pipe(res);
 
 
-			let readableStream = ytDlpWrap.execStream([
-				url,
-				'-f',
-				'18',
-			]);
-			readableStream.pipe(res);
+			// let readableStream = ytDlpWrap.execStream([
+			// 	url,
+			// 	'-f',
+			// 	'18',
+			// ]);
+			// readableStream.pipe(res);
 
 
         	//console.log(url)

@@ -261,9 +261,12 @@ class Karaoke extends React.Component {
 
     async getTJChart() {
         const response = await fetch('/api/TJ');
-        const body = response.json();
-        if (response.status !== 200) throw Error(body.message);
-        return body;
+        //const response = await fetch('http://localhost:5001/api/TJ');
+        if (response.status !== 200) {
+            const error = await response.json(); // read error message
+            throw Error(error.message || 'Failed to fetch');
+        }
+        return await response.json();
     }
 
     async getSingKingPlaylist(){
